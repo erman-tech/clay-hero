@@ -84,9 +84,9 @@
   });
   $("tekrar").addEventListener("click", function () { oyunBaslat(); });
   $("yeni").addEventListener("click", function () { muzikDur(); location.href = "../index.html"; });
-  $("londraGit").addEventListener("click", function () { muzikDur(); location.href = BAG.get("sonra") === "tokyo" ? "../index.html?tokyofilm=1" : BAG.get("sonra") === "final" ? "../final/index.html" : "../tirtil/index.html?baglanti=1&final=1&seri=" + SERI; });
+  $("londraGit").addEventListener("click", function () { muzikDur(); location.href = FINALDEN ? "../tirtil/index.html?baglanti=1&final=1&seri=" + SERI : "../index.html?x=" + SERI + (SONRA ? "&don=" + SONRA : ""); });
   var FINALDEN = true; if (FINALDEN) $("londraGit").textContent = "▶ Back to the caterpillar mission"; // şehirler bittikten sonra portala düşüldüyse: kaçınca Londra değil, tırtıl görevi sürer
-  var SONRA = BAG.get("sonra") === "tokyo" ? "tokyo" : ""; if (SONRA) $("londraGit").textContent = "✈ Ready for Tokyo!"; if (BAG.get("sonra") === "final") $("londraGit").textContent = "▶ Back to Istanbul!"; if (SONRA || BAG.get("sonra") === "final") document.querySelector("#kapak h2").textContent = "Zorgo's UFO beamed you to his planet. Jump on the platforms and reach the portal at the top. The lava is rising!"; // Londra'dan eve dönerken kaçırıldıysa: kaçınca Tokyo görevi sorulur
+  var SONRA = BAG.get("sonra") === "tokyo" ? "tokyo" : ""; if (SONRA) $("londraGit").textContent = "✈ Ready for Tokyo!"; if (SONRA) document.querySelector("#kapak h2").textContent = "Zorgo's UFO beamed you to his planet. Jump on the platforms and reach the portal at the top. The lava is rising!"; // Londra'dan eve dönerken kaçırıldıysa: kaçınca Tokyo görevi sorulur
 
   // ---------- bölüm ----------
   // Dünya koordinatı: y yukarı doğru AZALIR (ekranla aynı yön). Başlangıç zemini y = 0, portal y = -YUKSEKLIK.
@@ -135,7 +135,7 @@
   function sonucGoster() {
     var o = D.oyun, kazandi = o.durum === "kazandi"; o.durum = "bitti";
     $("sonucBaslik").textContent = kazandi ? "You went through the portal and made it home!" : (o.neden || "The lava caught you!");
-    $("sonucYazi").textContent = kazandi ? "You escaped from Zorgo's planet. You collected " + o.kristal + " crystals. " + (BAG.get("sonra") === "final" ? "Zorgo is waiting in Istanbul!" : SONRA ? "Ready to save Tokyo?" : FINALDEN ? "Ready to go back to the caterpillar mission?" : "Ready to save " + (SONRA ? "Tokyo" : "London") + "?") : "You were " + Math.max(0, Math.round((YUKSEKLIK + o.k.y) / 100)) + " steps from the portal. Try again!";
+    $("sonucYazi").textContent = kazandi ? "You escaped from Zorgo's planet. You collected " + o.kristal + " crystals. " + (FINALDEN ? "Ready to go back to the caterpillar mission?" : "Ready to save " + (SONRA ? "Tokyo" : "London") + "?") : "You were " + Math.max(0, Math.round((YUKSEKLIK + o.k.y) / 100)) + " steps from the portal. Try again!";
     $("londraGit").style.display = kazandi ? "" : "none"; $("tekrar").style.display = kazandi ? "none" : "";
     ekranAc("sonuc"); cal(kazandi ? "p_kazandin" : "p_kaybettin", 1);
     if (window.HK) HK.skorGoster("kacis", [["Crystals", o.kristal, o.kristal * 10], ["Aliens squashed", o.ezilen, o.ezilen * 20], ["Lives left", Math.max(0, o.can), Math.max(0, o.can) * 50]].concat(kazandi ? [["Through the portal", "✔", 300]] : []), kazandi);

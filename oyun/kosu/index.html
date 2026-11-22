@@ -33,16 +33,15 @@
   #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
   @keyframes don { 0%, 20% { transform: rotate(90deg); } 60%, 100% { transform: rotate(0deg); } }
 </style>
-<link rel="stylesheet" href="../../ortak/menu.css?v=2">
 </head>
 <body>
 <div id="sahne">
   <canvas id="tuval" width="720" height="1280"></canvas>
   <div id="kapak" class="ekran acik">
     <h1>Save the Parrot</h1>
-    <h2>Drones are carrying the parrot away over the rooftops of Tokyo. Run, dodge the obstacles and catch the drones! Three levels, each one faster.</h2>
+    <h2>Drones are carrying the parrot away over the rooftops of Tokyo. Run, dodge the obstacles and catch the drones! Three levels, each one faster. Üç seviye var, her biri daha hızlı. Tek canın var!</h2>
     <button id="basla" class="hamur kirmizi">▶ START</button>
-    <p>Swipe left or right: change lane<br>Swipe up: jump · Swipe down: slide<br>At corners: swipe to turn</p>
+    <p>Swipe left or right: change lane<br>Swipe up: jump · Swipe down: slide<br>At corners: swipe to turn<br>Köşede: dönmek için kaydır</p>
   </div>
   <div id="sonuc" class="ekran">
     <h1 id="sonucBaslik"></h1>
@@ -55,7 +54,6 @@
   </div>
 </div>
 <div id="dondur"><div class="tel"></div>This game is played upright.<br>Hold your tablet upright!</div>
-<script src="../../ortak/menu.js?v=2" data-oyun="kosu" data-ana="../../menu.html" data-yan="sol"></script>
 <script src="oyun.js"></script>
 </body>
 </html>

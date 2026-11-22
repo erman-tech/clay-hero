@@ -219,7 +219,7 @@
       if (e.tur === "dron") yer = e.serit * Math.cos(o.t * 2.1 + e.faz);              // gezen dron: şeritler arasında gider gelir
       e.yer = yer;
       if (once > 30 && z <= 30 && Math.abs(yer - o.sx) < 0.5) {       // kahramanın hizasına geldi
-        if (e.tur === "onigiri") { if (Math.abs(o.zy - (e.yuk || 0)) < 170) { o.onigiri++; cal("e_simit", 0.4); parca(o, G / 2 + o.sx * SERIT, TABAN - 150 - o.zy * 0.75, "#fff", 6, 300); if (o.onigiri % 20 === 0 && o.can < 3) { o.can++; mesajVer(o, "20 onigiri: one heart back!", 1.5); } o.engeller.splice(i, 1); continue; } }
+        if (e.tur === "onigiri") { if (Math.abs(o.zy - (e.yuk || 0)) < 170) { o.onigiri++; cal("e_simit", 0.4); parca(o, G / 2 + o.sx * SERIT, TABAN - 150 - o.zy * 0.75, "#fff", 6, 300); if (o.onigiri % 20 === 0 && o.can < 1) { o.can++; mesajVer(o, "20 onigiri: one heart back!", 1.5); } o.engeller.splice(i, 1); continue; } }
         else if (e.tur === "bariyer" ? o.zy < 85 : e.tur === "kapi" ? !(o.kay > 0 && o.zy < 40) : e.tur === "dron" ? !(o.kay > 0 && o.zy < 40) : true) incit(o, null, e.tur);
       }
       if (z < -300) o.engeller.splice(i, 1);
