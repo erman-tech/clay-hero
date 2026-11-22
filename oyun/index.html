@@ -101,6 +101,7 @@
   #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
   @keyframes don { 0%, 20% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
 </style>
+<link rel="stylesheet" href="../ortak/menu.css?v=2">
 </head>
 <body>
 <div id="sahne">
@@ -111,7 +112,6 @@
     <img id="kapakPortre" alt="">
     <div class="kutu"><h1>Clay Hero</h1><div id="kapakIsim"></div><button id="basla" class="hamur kirmizi">▶ START</button>
     <p>Turn the sound on!</p></div>
-    <a class="geri" href="../index.html">✎ Change hero</a>
   </div>
   <div id="secim" class="ekran">
     <div class="soru">Do you dare to save the world?</div>
@@ -155,6 +155,7 @@
 </div>
 <div id="dondur"><div class="tel"></div>This game is played sideways.<br>Turn your tablet!</div>
 <script>(function () { var dik = false; function k() { var y = innerWidth > innerHeight * 1.15, d = innerHeight > innerWidth * 1.15; document.getElementById("dondur").style.display = ("ontouchstart" in window) && (dik ? y : d) ? "flex" : "none"; } addEventListener("resize", k); k(); })();</script>
+<script src="../ortak/menu.js?v=2" data-oyun="sehirler" data-ana="../menu.html" data-yan="orta"></script>
 <script src="oyun.js"></script>
 </body>
 </html>

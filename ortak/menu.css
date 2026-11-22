@@ -1,0 +1,31 @@
+/* Clay Hero ortak menü görünümü: kapak, sonuç, duraklatma. Beş oyunun index.html'ine menu_bagla.py ile eklenir (22 Kas 2026). */
+@keyframes chPop { 0% { transform: scale(.85); } 70% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes chNabiz { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes chSalla { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+.hamur { background-image: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 45%, rgba(0,0,0,.14)); letter-spacing: .5px;
+  text-shadow: 0 3px 0 rgba(0,0,0,.28); border: 5px solid rgba(255,255,255,.9) !important; }
+.hamur.sari { text-shadow: 0 2px 0 rgba(255,255,255,.4); }
+#kapak.acik, #sonuc.acik, #harita.acik, #secim.acik { background-image: radial-gradient(circle at 50% 38%, rgba(96,72,190,.55), rgba(22,14,54,.9) 72%); }
+#kapak #basla { animation: chNabiz 1.6s ease-in-out infinite; }
+#kapak h1, #sonuc h1, #harita h1 { -webkit-text-stroke: 3px rgba(40,20,90,.9); paint-order: stroke fill; letter-spacing: 1px; animation: chPop .5s ease-out both; }
+#sonuc .dugmeler, #harita .dugmeler { animation: chPop .5s .15s ease-out both; }
+#kapak h2, #sonuc h2 { background: rgba(20,14,56,.55); border: 3px solid rgba(255,255,255,.18); border-radius: 28px; padding: 18px 26px; box-sizing: border-box; }
+#sonuc h2:empty { display: none; }
+#kapak p { opacity: .92; }
+.ch-rozet { display: inline-block; font-size: 30px; font-weight: 900; color: #2b1a00; background: linear-gradient(180deg, #ffe37a, #f2b61e); padding: 8px 26px;
+  border-radius: 30px; border: 4px solid #fff; box-shadow: 0 6px 0 rgba(0,0,0,.35); margin-bottom: 22px; letter-spacing: 3px; animation: chSalla 3s ease-in-out infinite; }
+/* köşe düğmeleri (sahnenin içinde, sahneyle birlikte ölçeklenir) */
+#sahne > .ch-kose { position: absolute; left: auto; top: 14px; width: 68px; height: 68px; border-radius: 50%; border: 4px solid rgba(255,255,255,.9); cursor: pointer;
+  background: rgba(30,22,80,.72); color: #fff; font-size: 30px; line-height: 1; display: none; align-items: center; justify-content: center; padding: 0; z-index: 30;
+  box-shadow: 0 5px 0 rgba(0,0,0,.35); font-family: inherit; }
+#sahne > .ch-kose.gor { display: flex; }
+#sahne > .ch-kose:active { transform: translateY(4px); }
+#sahne > #chDur { opacity: .8; }
+/* duraklatma */
+#sahne > #chMenu { display: none; z-index: 40; background: rgba(16,10,44,.78); align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
+#sahne > #chMenu.acik { display: flex; }
+#chMenu .ch-kart { background: linear-gradient(180deg, #4a3aa0, #2f2470); border: 6px solid #fff; border-radius: 44px; padding: 34px 44px 40px; box-shadow: 0 14px 0 rgba(0,0,0,.4);
+  display: flex; flex-direction: column; gap: 20px; min-width: 420px; animation: chPop .3s ease-out both; }
+#chMenu h1 { margin: 0 0 6px; font-size: 54px; color: #ffd23a; -webkit-text-stroke: 3px rgba(40,20,90,.9); paint-order: stroke fill; }
+#chMenu .hamur { font-size: 34px; padding: 16px 30px; }
+#chMenu .mor { background-color: #6a55d8; }

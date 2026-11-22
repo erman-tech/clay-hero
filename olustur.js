@@ -16,6 +16,8 @@
   try { var e = JSON.parse(localStorage.getItem("clayHero") || "null"); if (e) ["sac", "renk", "ten", "isim"].forEach(function (a) { if (typeof e[a] === "string") K[a] = e[a]; }); } catch (h) { /* saklama kapalı olabilir */ }
   function gecerli(k) { return !!VAR[k.ten] && VAR[k.ten].indexOf(k.renk) >= 0 && (k.sac === "duz" || k.sac === "dikenli"); }
   if (!gecerli(K)) { K.sac = "dikenli"; K.renk = "kahve"; K.ten = "acik"; }
+  // kahraman zaten yapılmışsa doğrudan ana menü açılır; "Change hero" ?edit=1 ile gelir
+  if (K.isim && !/[?&]edit=1/.test(location.search)) { location.replace("menu.html"); return; }
 
   function ad(k) { return k.sac + "_" + k.renk + "_" + k.ten; }
   function sakla() { try { localStorage.setItem("clayHero", JSON.stringify(K)); } catch (h) { /* yoksay */ } }
@@ -54,7 +56,7 @@
   });
   $("hazir").addEventListener("click", function () {
     var isim = (K.isim || "").trim(); if (!isim) { $("durum").textContent = "Give your hero a name first."; $("isim").focus(); return; }
-    sakla(); $("durum").textContent = isim + " is ready!"; location.href = "oyun/index.html"; // oyun seçimi localStorage "clayHero"dan okur
+    sakla(); $("durum").textContent = isim + " is ready!"; location.href = "menu.html"; // ana menü; kahraman localStorage "clayHero"dan okunur
   });
 
   ciz(); secenekler();
