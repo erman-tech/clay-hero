@@ -106,19 +106,21 @@
   }
 
   // ---------- filmler ----------
-  var SEHIR_SN = [4.3, 5.4, 6.3, 7.3, 8.3], filmBitince = null;
+  var SEHIR_SN = [4.5, 5.2, 5.9, 6.6, 7.3], filmBitince = null;
+  var FILM_YOL = { giris: "ortak/giris", ufo_kirmizi_v2: "ortak/ufo", us_kirmizi_v2: KAHRAMAN.gorunus + "/us", tokyo_kirmizi_v2: KAHRAMAN.gorunus + "/tokyo", paris_kirmizi_v2: KAHRAMAN.gorunus + "/paris", la_kirmizi_v2: KAHRAMAN.gorunus + "/la" };
   function filmOynat(ad, bitince) {
-    if (bitince) bitince(); return; // Clay Hero: filmler henüz yok
-    film.dataset.ad = ad; var fu = "video/" + ad + ".mp4"; if (film.getAttribute("src") !== fu) film.src = fu; else { try { film.currentTime = 0; } catch (e) {} } filmBitince = bitince; // önceden yüklenen film baştan indirilmez
+    if (!FILM_YOL[ad]) { if (bitince) bitince(); return; }
+    film.dataset.ad = ad; var fu = "../filmler/" + FILM_YOL[ad] + ".mp4"; if (film.getAttribute("src") !== fu) film.src = fu; else { try { film.currentTime = 0; } catch (e) {} } filmBitince = bitince; // önceden yüklenen film baştan indirilmez
     Array.prototype.forEach.call($("sehirler").children, function (s) { s.classList.remove("gor"); });
     ekranAc("film");
     var p = film.play(); if (p && p.catch) p.catch(function () {});
   }
   function filmBitti() { var f = filmBitince; filmBitince = null; film.pause(); if (f) f(); }
   film.addEventListener("ended", filmBitti);
+  film.addEventListener("error", function () { if (filmBitince) filmBitti(); });
   $("gec").addEventListener("click", filmBitti);
   // İlk film sayfa açılırken indirilmeye başlar; BAŞLA'ya basınca beklemesin (test ve devam bağlantılarında gerekmez)
-  (function () { var q = new URLSearchParams(location.search); if (!q.get("test") && !q.get("devam") && !q.get("londra") && !q.get("merkez")) { /* film yok */ } })();
+  (function () { var q = new URLSearchParams(location.search); if (!q.get("test") && !q.get("devam") && !q.get("londra") && !q.get("merkez")) { film.src = "../filmler/ortak/giris.mp4"; film.load(); } })();
   film.addEventListener("timeupdate", function () {
     if (film.dataset.ad !== "giris") return;
     var t = film.currentTime, ss = $("sehirler").children;
@@ -167,7 +169,7 @@
       var tg = SEHIRLER[TEST].gecis, tb = function () { D.sehir = TEST; oyunBaslat(); };
       if (tg) filmOynat(tg[D.secim], tb); else tb(); return;
     }
-    sec("iyi"); });
+    filmOynat("giris", function () { sec("iyi"); }); });
 
   // ---------- Görevler merkezi ----------
   // İlk görev bittikten sonra filmden sonra açılır: açılan kostümlerden biri seçilir, biten ya da sıradaki görev oynanır.
@@ -231,7 +233,7 @@
     if (!siradaki()) { muzikDur(); location.href = "final/index.html"; return; } // beş şehir bitti: final (Knock Down the Tower)
     var h = siradaki() || "londra", sh = SEHIRLER[h]; muzikDur();
     filmOynat(sh.gecis[D.secim], function () {
-      if (h === "tokyo") { location.href = "kosu/index.html"; return; } // önce papağanı kurtar (koşu), sonra Tokyo bölümü
+      if (h === "tokyo") { filmOynat(sh.gecis.iyi, function () { location.href = "kosu/index.html"; }); return; } // Tokyo filmi, sonra papağanı kurtar (koşu), sonra Tokyo bölümü
       D.sehir = h; oyunBaslat();
     });
   });

@@ -47,9 +47,9 @@
   // hiz: başlangıç ve son hız; sure: engelsiz koşuda dronlara yetişme süresi; ara: engel sıraları arası mesafe (baş, son);
   // kose: keskin köşeler arası süre; bosluk/tam/dron/cift: çatı boşluğu, tam sıra, gezen dron ve çift sıra olasılığı.
   var SEVIYE = [
-    { ad: "Level 1", hiz: [900, 1250], sure: 50, ara: [1150, 900], kose: [13, 17], bosluk: 0.10, tam: 0.10, dron: 0, cift: 0, bos: 0.40 },
-    { ad: "Level 2", hiz: [1150, 1550], sure: 60, ara: [1000, 780], kose: [10, 13], bosluk: 0.20, tam: 0.22, dron: 0.14, cift: 0.15, bos: 0.22 },
-    { ad: "Level 3", hiz: [1350, 1780], sure: 70, ara: [920, 720], kose: [7.5, 10.5], bosluk: 0.26, tam: 0.28, dron: 0.22, cift: 0.28, bos: 0.12 }];
+    { ad: "Level 1", hiz: [1000, 1400], sure: 50, ara: [1150, 900], kose: [13, 17], bosluk: 0.10, tam: 0.10, dron: 0, cift: 0, bos: 0.40 },
+    { ad: "Level 2", hiz: [1300, 1750], sure: 60, ara: [1000, 780], kose: [10, 13], bosluk: 0.20, tam: 0.22, dron: 0.14, cift: 0.15, bos: 0.22 },
+    { ad: "Level 3", hiz: [1550, 2050], sure: 70, ara: [920, 720], kose: [7.5, 10.5], bosluk: 0.26, tam: 0.28, dron: 0.22, cift: 0.28, bos: 0.12 }];
   // Zıplama ve kayma SÜREYE değil YOLA göre: hız artınca zıplama uzarsa kahraman bir sonraki sıranın üstüne iner (ölçüldü: 3. seviyede
   // deneme oyuncusu 20 denemede 0 kazandı, çarpmaların çoğu havadayken gelen sıradandı). Yükseklik sabit, havada kalınan yol sabit.
   var ZIPLA_YOL = 620, ZIPLA_YUK = 237, KAY_YOL = 620;
