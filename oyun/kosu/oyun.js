@@ -63,7 +63,7 @@
 
   function yeniOyun(sv, can) {
     var L = SEVIYE[sv];
-    return { sv: sv, L: L, t: 0, s: 0, hiz: L.hiz[0], serit: 0, sx: 0, zy: 0, zvy: 0, kay: 0, can: can == null ? 3 : can, dokunulmaz: 0, onigiri: 0, yakin: 0, durum: "oyna", bitis: 0,
+    return { sv: sv, L: L, t: 0, s: 0, hiz: L.hiz[0], serit: 0, sx: 0, zy: 0, zvy: 0, kay: 0, can: 1, gerisayim: 0, dokunulmaz: 0, onigiri: 0, yakin: 0, durum: "oyna", bitis: 0,
       engeller: [], bosluklar: [], yol: [], koseler: [], susler: [], parcalar: [], sonrakiSira: 1700, sonrakiEgri: 600, sonrakiSus: 300, koseSn: L.kose[0] * 0.8,
       yon: 0, egim: 0, sarsinti: 0, mesaj: "", mesajSn: 0, tohum: 1 + Math.floor(Math.random() * 9999), donen: 0, hiza: 0, toz: 0 };
   }
@@ -162,7 +162,13 @@
   function bitir(o, kazandi) {
     if (o.durum !== "oyna") return;
     if (kazandi && o.sv < SEVIYE.length - 1) {     // ara seviye: dronlar hızlanıp uzaklaşır, sıradaki seviye başlar
-      o.durum = "seviye"; o.bitis = 2.6; cal("e_zafer", 0.5); mesajVer(o, o.L.ad + " complete! The drones speed up!", 2.6); return;
+      // 22 Kas 2026: koşu KESİLMEZ. Seviye yerinde değişir, 3 sn geri sayım boyunca engel ve köşe gelmez; geçilen seviye kayıt noktasıdır.
+      cal("e_zafer", 0.5); o.sv++; o.L = SEVIYE[o.sv]; D.seviye = o.sv; seviyeYaz(); o.yakin = 0; o.gerisayim = 3;
+      o.engeller = o.engeller.filter(function (e) { return e.s < o.s; }); o.bosluklar = o.bosluklar.filter(function (b) { return b.b < o.s; });
+      o.koseler = o.koseler.filter(function (k) { return k.donuldu || k.carpti || k.s + KOSE_BOY < o.s; });
+      o.yol = o.yol.filter(function (p) { return !(p.kose && p.a > o.s); }); o.susler = o.susler.filter(function (u) { return !(u.tur === "ok" && u.s > o.s); });
+      o.sonrakiSira = o.s + o.hiz * 3 + 500; o.koseSn = Math.max(5, o.L.kose[0] * 0.8);
+      mesajVer(o, SEVIYE[o.sv - 1].ad + " complete! Checkpoint saved.", 3); return;
     }
     o.durum = kazandi ? "kazandi" : "kayip"; o.bitis = kazandi ? 2.6 : 1.4;
     if (kazandi) { cal("e_zafer", 0.8); cal("a_kosu2", 1); setTimeout(function () { cal("p_kosu3", 1); }, 2300); mesajVer(o, "You caught them! The parrot is free!", 3); }
@@ -172,7 +178,7 @@
     muzik(false); var kz = o.durum === "kazandi";
     if (kz) { D.seviye = 0; seviyeYaz(); }
     $("sonucBaslik").textContent = kz ? "The parrot is free!" : "The drones got away!";
-    $("sonucYazi").textContent = kz ? "You beat all three levels, collected " + o.onigiri + " onigiri and turned " + o.donen + " corners in the last one. Now it is time to save Tokyo together with the parrot!" : "You ran out of hearts in " + o.L.ad + ". Try again, you will catch them this time!";
+    $("sonucYazi").textContent = kz ? "You beat all three levels, collected " + o.onigiri + " onigiri and turned " + o.donen + " corners in the last one. Now it is time to save Tokyo together with the parrot!" : "You hit an obstacle in " + o.L.ad + ". You restart from this level, you will catch them this time!";
     $("devam").style.display = kz ? "" : "none"; $("tekrar").style.display = kz ? "none" : ""; $("tekrar").textContent = "Try " + o.L.ad + " again";
     ekranAc("sonuc");
   }
@@ -187,6 +193,7 @@
       else { if (o.durum === "kazandi") { o.s += o.hiz * 0.4 * dt; o.yon += kappa(o, o.s) * o.hiz * 0.4 * dt; } if (o.bitis <= 0 && D.ekran === "oyun") sonucAc(o); }
       return;
     }
+    if (o.gerisayim > 0) o.gerisayim -= dt;
     var L = o.L, hedef = L.hiz[0] + (L.hiz[1] - L.hiz[0]) * o.yakin; o.hiz += (hedef - o.hiz) * Math.min(1, dt * 0.8);
     // keskin köşe: zamanı gelince ileride belirir
     if (!o.koseler.length || o.koseler[o.koseler.length - 1].s + KOSE_BOY < o.s) { if (o.yakin < 0.93) { o.koseSn -= dt; if (o.koseSn <= 0) { koseEkle(o); o.koseSn = L.kose[0] + rasgele(o) * (L.kose[1] - L.kose[0]); } } }
@@ -358,7 +365,8 @@
     // köşe uyarısı
     var k = aktifKose(o); if (k && o.durum === "oyna" && !(poz % 2 && k.s - o.s < 450)) yazi(k.yon > 0 ? "SWIPE RIGHT  ➜" : "⬅  SWIPE LEFT", G / 2, 560, 50, "#ffd23a");
     // gösterge
-    for (i = 0; i < 3; i++) resim(R.kalp, 130 + i * 54, 96, 48, i < o.can ? 1 : 0.25);
+    resim(R.kalp, 130, 96, 48, o.can > 0 ? 1 : 0.25);
+    if (o.gerisayim > 0) { yazi(o.L.ad + " starts in", G / 2, 520, 40, "#ffd23a"); yazi("" + Math.ceil(o.gerisayim), G / 2, 640, 150, "#fff"); }
     resim(R.onigiri, 130, 168, 54); yazi("" + o.onigiri, 170, 160, 34, "#ffd23a", "left");
     c.fillStyle = "rgba(20,25,60,.6)"; c.beginPath(); c.roundRect(290, 58, 390, 30, 15); c.fill();
     c.fillStyle = "#39d0e8"; c.beginPath(); c.roundRect(294, 62, Math.max(22, 382 * o.yakin), 22, 11); c.fill();
