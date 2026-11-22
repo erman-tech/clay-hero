@@ -158,6 +158,7 @@
   (function () { var p = $("kapakPortre"); if (p) p.src = "../portre/" + KAHRAMAN.gorunus + ".jpg"; var n = $("kapakIsim"); if (n) n.textContent = KAHRAMAN.isim; })();
   $("basla").addEventListener("click", function () {
     if (window.HK && !HK.isim() && !SEHIRLER[TEST]) { isimSor(function () { $("basla").click(); }); return; }
+    if (new URLSearchParams(location.search).get("tokyofilm") === "1") { D.secim = "iyi"; filmOynat("tokyo_kirmizi_v2", function () { location.href = "kosu/index.html"; }); return; } // kaçıştan dönüş: Tokyo filmi, sonra koşu
     var DEVAM = new URLSearchParams(location.search).get("devam"); // koşu oyunundan dönüş: o şehir filmsiz başlar
     if (SEHIRLER[DEVAM]) {
       D.secim = "iyi";
@@ -216,6 +217,7 @@
     if (ad === "kosu" && sira) filmOynat(SEHIRLER.tokyo.gecis[seri], git); else git(); // papağan koşusu Tokyo filminin devamı
   });
   if (SEHIRLER[TEST]) $("basla").textContent = "▶ TEST: " + SEHIRLER[TEST].ad;
+  if (new URLSearchParams(location.search).get("tokyofilm") === "1") $("basla").textContent = "✈ Ready for Tokyo!";
   if (SEHIRLER[new URLSearchParams(location.search).get("devam")]) $("basla").textContent = "▶ Save " + SEHIRLER[new URLSearchParams(location.search).get("devam")].eki + "!";
   $("evet").addEventListener("click", function () { sec("iyi"); });
   $("hayir").addEventListener("click", function () { sec("kotu"); });
@@ -224,16 +226,19 @@
   $("kal").addEventListener("click", function () {
     if (siradaki() === "tokyo") { // Londra'dan sonra eve dönmek isterse: Zorgo'nun UFO'su jeti yakalar, kötüler gezegenine ışınlar → Gezegenden Kaçış; kaçarsa Tokyo görevi yine sorulur
       muzikDur(); var kst = SEHIRLER.londra.on[D.secim].replace("_", "");
-      filmOynat(D.secim === "iyi" ? "ufo_kirmizi_v2" : "ufo_siyah_v2", function () { location.href = "../kacis/index.html?sonra=tokyo&k=" + kst + "&seri=" + (D.secim === "iyi" ? "iyi" : "kotu"); });
+      filmOynat(D.secim === "iyi" ? "ufo_kirmizi_v2" : "ufo_siyah_v2", function () { try { localStorage.setItem("ch_kacis", "1"); } catch (e) {} location.href = "kacis/index.html?sonra=tokyo"; });
       return;
     }
     muzikDur(); location.href = "../tirtil/index.html?baglanti=1&seri=" + (D.secim === "iyi" ? "iyi" : "kotu"); });
   // İstanbul'dan sonra: gizli üs, yeni kostüm, hamur jet ve Londra
   $("londra").addEventListener("click", function () { // sıradaki şehre: geçiş filmi (yeni kostüm) → bölüm
-    if (!siradaki()) { muzikDur(); location.href = "final/index.html"; return; } // beş şehir bitti: final (Knock Down the Tower)
+    if (!siradaki()) { muzikDur(); var kacti = false; try { kacti = localStorage.getItem("ch_kacis") === "1"; } catch (e) {}
+      if (kacti) { location.href = "final/index.html"; return; }
+      filmOynat("ufo_kirmizi_v2", function () { try { localStorage.setItem("ch_kacis", "1"); } catch (e) {} location.href = "kacis/index.html?sonra=final"; }); return; } // eve dönerken UFO: kaçış, sonra kule
+    if (false) { return; } // beş şehir bitti: final (Knock Down the Tower)
     var h = siradaki() || "londra", sh = SEHIRLER[h]; muzikDur();
     filmOynat(sh.gecis[D.secim], function () {
-      if (h === "tokyo") { filmOynat(sh.gecis.iyi, function () { location.href = "kosu/index.html"; }); return; } // Tokyo filmi, sonra papağanı kurtar (koşu), sonra Tokyo bölümü
+      if (h === "tokyo") { location.href = "kosu/index.html"; return; } // Tokyo filmi az önce oynadı; önce papağanı kurtar (koşu), sonra Tokyo bölümü
       D.sehir = h; oyunBaslat();
     });
   });
@@ -797,9 +802,9 @@
       return '<div class="kart' + (t ? " tamam" : "") + '">' + q[1] + "<small>" + (t ? "✔ Saved" : sira ? "✈ Next mission" : "🔒 Coming soon") + "</small></div>";
     }).join("");
     $("zaferBaslik").textContent = ad() + " saved " + sehir().eki + "!";
-    $("londra").style.display = ""; $("kal").style.display = "none";
+    $("londra").style.display = ""; $("kal").style.display = sr === "tokyo" ? "" : "none";
     $("londra").textContent = sr ? "✈ Ready for " + SEHIRLER[sr].ad + "!" : "▶ Knock down the tower!";
-    $("kal").textContent = sr === "tokyo" ? "🏠 Eve dönmek istiyorum" : "İstanbul'da kalacağım";
+    $("kal").textContent = "🏠 I want to go home";
     $("karar").textContent = sr ? "Ready to save " + SEHIRLER[sr].ad + "?" : "All five cities are saved! But Zorgo has built a tower in Istanbul…";
     $("tekrar").style.display = "";
     D.sonYildiz = yildiz; ekranAc("harita");
