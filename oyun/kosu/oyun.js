@@ -56,9 +56,10 @@
   var KOSE_BOY = 900, KOSE_K = Math.PI / 2 / (KOSE_BOY * 2 / Math.PI), KOSE_PENCERE = 950;   // köşe: çeyrek dönüş; kaydırma bu mesafeden itibaren dönüş sayılır
 
   var D = { ekran: "kapak", oyun: null, seviye: 0, vuru: [] };
-  try { var ks = parseInt(localStorage.getItem("ch_kosu_seviye"), 10); if (ks >= 0 && ks < SEVIYE.length) D.seviye = ks; } catch (e) {}
+  // 22 Kas 2026: kayıt noktası yalnız oyun açıkken geçerli. Oyundan çıkılırsa 1. seviyeden başlanır; papağan üç seviye bitmeden kurtulmaz.
+  try { localStorage.removeItem("ch_kosu_seviye"); } catch (e) {}
   if (+BAG.get("seviye") >= 1 && +BAG.get("seviye") <= SEVIYE.length) D.seviye = +BAG.get("seviye") - 1;   // deneme: ?seviye=1..3
-  function seviyeYaz() { try { localStorage.setItem("ch_kosu_seviye", String(D.seviye)); } catch (e) {} }
+  function seviyeYaz() {}   // bilerek boş: seviye yalnız bellekte (D.seviye) tutulur
   function ekranAc(ad) { D.ekran = ad; ["kapak", "sonuc"].forEach(function (e) { $(e).classList.toggle("acik", e === ad); }); }
 
   function yeniOyun(sv, can) {
@@ -168,7 +169,7 @@
       o.koseler = o.koseler.filter(function (k) { return k.donuldu || k.carpti || k.s + KOSE_BOY < o.s; });
       o.yol = o.yol.filter(function (p) { return !(p.kose && p.a > o.s); }); o.susler = o.susler.filter(function (u) { return !(u.tur === "ok" && u.s > o.s); });
       o.sonrakiSira = o.s + o.hiz * 3 + 500; o.koseSn = Math.max(5, o.L.kose[0] * 0.8);
-      mesajVer(o, SEVIYE[o.sv - 1].ad + " complete! Checkpoint saved.", 3); return;
+      mesajVer(o, SEVIYE[o.sv - 1].ad + " complete! Checkpoint!", 3); return;
     }
     o.durum = kazandi ? "kazandi" : "kayip"; o.bitis = kazandi ? 2.6 : 1.4;
     if (kazandi) { cal("e_zafer", 0.8); cal("a_kosu2", 1); setTimeout(function () { cal("p_kosu3", 1); }, 2300); mesajVer(o, "You caught them! The parrot is free!", 3); }
