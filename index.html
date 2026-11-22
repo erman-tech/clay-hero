@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Clay Hero: Make Your Hero</title>
+<style>
+  :root { --zemin:#2b2350; --kart:#3a3068; --yazi:#fff7e6; --sari:#ffd23a; --soluk:#cfc6f0; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; background: var(--zemin); color: var(--yazi);
+    font-family: "Avenir Next", "Trebuchet MS", system-ui, sans-serif; overflow: hidden; }
+  #sayfa { height:100%; display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:18px; padding:18px; max-width:1180px; margin:0 auto; }
+  #sol { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; }
+  h1 { margin:0 0 6px; font-size: clamp(22px, 3.2vw, 36px); color: var(--sari); text-align:center; }
+  #figur { width:100%; max-width:480px; aspect-ratio:1; border-radius:36px; object-fit:cover; display:block;
+    background: radial-gradient(circle at 50% 40%, #6f62b8 0%, #453a80 60%, #33295f 100%); box-shadow: inset 0 -10px 0 rgba(0,0,0,.18); }
+  #isimSatiri { margin-top:12px; display:flex; gap:10px; width:100%; max-width:480px; }
+  #isim { flex:1; min-width:0; font:inherit; font-size:20px; padding:12px 16px; border-radius:18px; border:3px solid #7f72c9;
+    background:#fff7e6; color:#2b2350; text-align:center; }
+  #sag { display:flex; flex-direction:column; min-height:0; background: var(--kart); border-radius:28px; padding:14px; }
+  #sekmeler { display:flex; flex-wrap:wrap; gap:8px; }
+  .sekme { font:inherit; font-size:16px; font-weight:700; padding:10px 14px; border-radius:16px; border:0; background:#51458f; color:var(--soluk); }
+  .sekme.secili { background: var(--sari); color:#2b2350; }
+  #secenekler { flex:1; min-height:0; overflow:auto; }
+  h2 { margin:10px 0 8px; font-size:17px; color:var(--soluk); font-weight:700; }
+  .sira { display:flex; gap:12px; flex-wrap:wrap; }
+  .sira .sec { width:104px; }
+  #sac .sec { width:150px; }
+  .sec img { width:100%; height:100%; object-fit:cover; display:block; }
+  .sec:disabled { opacity:.25; }
+  .sec { aspect-ratio:1; border-radius:22px; border:4px solid transparent; background:#51458f; padding:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .sec.secili { border-color: var(--sari); background:#6257a8; }
+  .sec canvas { width:100%; height:100%; display:block; }
+  .renk { width:68%; aspect-ratio:1; border-radius:50%; box-shadow: inset -6px -8px 0 rgba(0,0,0,.18), inset 5px 6px 0 rgba(255,255,255,.22); }
+  #alt { display:flex; gap:10px; margin-top:12px; }
+  .dugme { flex:1; font:inherit; font-size:20px; font-weight:800; padding:14px; border:0; border-radius:20px; background:#ff5a4d; color:#fff; box-shadow: 0 6px 0 #b8362c; }
+  .dugme.ikincil { flex:0 0 auto; background:#51458f; box-shadow: 0 6px 0 #382f6b; }
+  #durum { min-height:22px; margin-top:8px; text-align:center; color:var(--soluk); font-size:15px; }
+  @media (max-width: 760px), (orientation: portrait) {
+    html, body { overflow:auto; }
+    #sayfa { grid-template-columns: 1fr; height:auto; min-height:100%; padding:12px; gap:12px; }
+    #figur { max-width:340px; }
+    #secenekler { overflow:visible; }
+    .sira .sec { width:84px; }
+    #sac .sec { width:120px; }
+  }
+</style>
+</head>
+<body>
+<div id="sayfa">
+  <div id="sol">
+    <h1>Make your Clay Hero</h1>
+    <img id="figur" alt="Your clay hero">
+    <div id="isimSatiri"><input id="isim" maxlength="14" placeholder="Hero's name" autocomplete="off" aria-label="Hero's name"></div>
+  </div>
+  <div id="sag">
+    <div id="secenekler">
+      <h2>Skin</h2><div class="sira" id="ten"></div>
+      <h2>Hair colour</h2><div class="sira" id="renk"></div>
+      <h2>Hair</h2><div class="sira" id="sac"></div>
+    </div>
+    <div id="alt">
+      <button class="dugme ikincil" id="karistir" type="button">🎲 Surprise</button>
+      <button class="dugme" id="hazir" type="button">My hero is ready!</button>
+    </div>
+    <div id="durum" aria-live="polite"></div>
+  </div>
+</div>
+<script src="olustur.js?v=3"></script>
+</body>
+</html>

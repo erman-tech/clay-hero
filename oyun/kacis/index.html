@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Clay Hero: Escape the Planet</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #101a3a; overflow: hidden; touch-action: none;
+    font-family: "Arial Rounded MT Bold", "Chalkboard SE", "Trebuchet MS", sans-serif; user-select: none; -webkit-user-select: none; }
+  #sahne { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; transform-origin: 0 0; overflow: hidden; background: #2a2f6a; }
+  #sahne > * { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; }
+  canvas { display: block; }
+  .ekran { display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: #fff; }
+  .ekran.acik { display: flex; }
+  .hamur { border: 0; cursor: pointer; font: inherit; font-size: 44px; color: #fff; padding: 22px 54px; border-radius: 40px;
+    box-shadow: 0 10px 0 rgba(0,0,0,.35), inset 0 -8px 0 rgba(0,0,0,.18), inset 0 6px 0 rgba(255,255,255,.28); transition: transform .08s; }
+  .hamur:active { transform: translateY(6px); }
+  .kirmizi { background: #e23b2e; } .sari { background: #f2b61e; color: #3a2400; } .mavi { background: #2f7fd6; }
+  #kapak { background: rgba(20,22,70,.55); }
+  #kapak h1 { font-size: 64px; margin: 0 30px 10px; color: #ffd23a; text-shadow: 0 6px 0 rgba(0,0,0,.45); }
+  #kapak h2 { font-size: 28px; margin: 0 60px 40px; font-weight: normal; text-shadow: 0 3px 0 rgba(0,0,0,.5); line-height: 1.35; }
+  #kapak p { font-size: 22px; margin: 18px 0 0; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
+  #kapak .geri { position: absolute; left: 24px; top: 20px; width: auto; height: auto; font-size: 22px; color: #fff; text-decoration: none;
+    background: rgba(20,30,70,.6); padding: 10px 20px; border-radius: 22px; }
+  #kapak .imza { position: absolute; left: 0; top: auto; bottom: 60px; width: 720px; height: auto; font-size: 24px; color: #ffd23a; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
+  #sonuc { background: rgba(16,26,58,.8); }
+  #sonuc h1 { font-size: 50px; margin: 0 30px 12px; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
+  #sonuc h2 { font-size: 26px; margin: 0 50px 30px; font-weight: normal; }
+  #sonuc .dugmeler { display: flex; flex-direction: column; gap: 26px; }
+  #sonuc .hamur { font-size: 30px; padding: 16px 34px; }
+  /* Film yataydır: sahnenin dışında, bütün ekranı kaplar */
+  #film { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: contain; background: #101a3a; z-index: 40; display: none; }
+  #gec { position: fixed; right: 20px; bottom: 18px; z-index: 41; font-size: 22px; padding: 10px 24px; display: none; }
+  /* Telefon yan tutuluyorsa: bu oyun dik oynanır */
+  #dondur { position: fixed; inset: 0; z-index: 50; background: #101a3a; color: #fff; display: none; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; font-size: 26px; }
+  #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
+  @keyframes don { 0%, 20% { transform: rotate(90deg); } 60%, 100% { transform: rotate(0deg); } }
+</style>
+</head>
+<body>
+<div id="sahne">
+  <canvas id="tuval" width="720" height="1280"></canvas>
+  <div id="kapak" class="ekran acik">
+    <h1>Escape the Planet</h1>
+    <h2>The portal brought you to Zorgo's planet. Jump on the platforms and reach the portal at the top. The lava is rising!</h2>
+    <button id="basla" class="hamur kirmizi">▶ START</button>
+    <p>Slide your finger left and right. Turn the sound on!</p>
+  </div>
+  <div id="sonuc" class="ekran">
+    <h1 id="sonucBaslik"></h1>
+    <h2 id="sonucYazi"></h2>
+    <div class="dugmeler">
+      <button id="londraGit" class="hamur kirmizi">▶ Continue</button>
+      <button id="tekrar" class="hamur sari">Try again</button>
+      <button id="yeni" class="hamur mavi">New game</button>
+    </div>
+  </div>
+</div>
+<video id="film" playsinline preload="auto"></video>
+<button id="gec" class="hamur sari">Skip ▶</button>
+<div id="dondur"><div class="tel"></div>This game is played upright.<br>Hold your tablet upright!</div>
+<script src="oyun.js"></script>
+</body>
+</html>
