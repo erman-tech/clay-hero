@@ -26,7 +26,7 @@
   function dugme(kap, secili, kilitli, etiket, ic, tikla) {
     var d = document.createElement("button"); d.type = "button"; d.className = "sec" + (secili ? " secili" : "");
     d.setAttribute("aria-label", etiket); d.setAttribute("aria-pressed", secili ? "true" : "false");
-    if (kilitli) d.disabled = true;
+    if (kilitli) { d.disabled = true; d.setAttribute("aria-label", etiket + " (coming soon)"); var y = document.createElement("span"); y.className = "yakinda"; y.textContent = "SOON"; d.appendChild(y); }   // filmi olmayan birleşim: seçilemez, "SOON" yazar
     d.appendChild(ic); d.addEventListener("click", tikla); kap.appendChild(d);
   }
   function top(renk) { var t = document.createElement("div"); t.className = "renk"; t.style.background = renk; return t; }

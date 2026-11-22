@@ -27,7 +27,9 @@
   .sira .sec { width:104px; }
   #sac .sec { width:150px; }
   .sec img { width:100%; height:100%; object-fit:cover; display:block; }
-  .sec:disabled { opacity:.25; }
+  .sec { position:relative; }
+  .sec:disabled { opacity:1; } .sec:disabled > :not(.yakinda) { opacity:.25; }
+  .yakinda { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotate(-12deg); background:#ffd23a; color:#2b2350; font-size:13px; font-weight:900; letter-spacing:1px; padding:3px 8px; border-radius:10px; border:2px solid #fff; }
   .sec { aspect-ratio:1; border-radius:22px; border:4px solid transparent; background:#51458f; padding:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .sec.secili { border-color: var(--sari); background:#6257a8; }
   .sec canvas { width:100%; height:100%; display:block; }
@@ -66,6 +68,6 @@
     <div id="durum" aria-live="polite"></div>
   </div>
 </div>
-<script src="olustur.js?v=4"></script>
+<script src="olustur.js?v=5"></script>
 </body>
 </html>
