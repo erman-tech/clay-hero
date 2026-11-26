@@ -1,5 +1,5 @@
 /* Clay Hero: Save the Parrot. Üç şeritli çatı koşusu (dik, 720×1280), üç seviye.
-   22 Kas 2026 : "dönüşü yolu düzgün şekilde yapalım; oynanabilirlik zorlukları artsın; 3 seviye olsun, gittikçe zorlaşan;
+   22 Kas 2026: "dönüşü yolu düzgün şekilde yapalım; oynanabilirlik zorlukları artsın; 3 seviye olsun, gittikçe zorlaşan;
    şu an bitirmek çok kolay ve grafik zayıf". Bu dosya the hero'in koşu oyunundan (hamur_kahraman_4) AYRI yazıldı; o oyun değişmedi.
    Yol artık gerçekten kıvrılır: yolun eğriliği (kappa) konuma bağlıdır, kamera kahramanın bulunduğu noktadaki yöne bakar,
    ilerideki yol eğrilik iki kez toplanarak yana kayar, arka plan dönüş açısı kadar kayar. Keskin köşede kaydırmak gerekir.

@@ -47,6 +47,7 @@
     #sac .sec { width:120px; }
   }
 </style>
+<!--uyg--><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1a1438"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Clay Hero"><link rel="apple-touch-icon" href="ortak/ikon-180.png"><link rel="icon" href="ortak/ikon-192.png"><!--/uyg-->
 </head>
 <body>
 <div id="sayfa">
@@ -69,5 +70,6 @@
   </div>
 </div>
 <script src="olustur.js?v=5"></script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});</script>
 </body>
 </html>

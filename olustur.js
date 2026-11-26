@@ -1,5 +1,5 @@
 /* Clay Hero: karakter yapma ekranı (erkek çocuk). Tek dosya, kütüphane yok.
-   20 Kas 2026 : "çocuklar normal olmalı, the hero gibi gerçekçi; o kadar opsiyona gerek yok".
+   20 Kas 2026: "çocuklar normal olmalı, the hero gibi gerçekçi; o kadar opsiyona gerek yok".
    Parçalardan yüz kurmak yerine filmdeki hamur çocuğun hazır portreleri gösterilir: portre/<saç>_<renk>_<ten>.jpg.
    Seçenekler filmi olan 12 görünüşle birebir aynı (film/v_<saç>_<renk>_<ten>); filmi olmayan birleşim seçilemez.
    Seçim yalnız bu cihazda saklanır (localStorage "clayHero"); hiçbir yere gönderilmez. */

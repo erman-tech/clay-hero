@@ -28,6 +28,7 @@
     var TARAF = localStorage.getItem("hk_taraf"); // seçilen taraf değişmez: yalnız kendi renginin kostümleri görünür
     if (TARAF === "iyi" || TARAF === "kotu") ACIK = ACIK.filter(function (x) { return (x.charAt(0) === "k") === (TARAF === "iyi"); });
   } catch (e) { ACIK = []; }
+  var SECILI_K = null; try { if (window.HK && HK.herkeseAcik && HK.taraf()) { ACIK = HK.acikKostumler(); SECILI_K = HK.seciliKostum(); } } catch (e) {} // 26 Kas 2026: bütün kahramanlar herkese açık
   ACIK = ["k", "kl", "kt", "kp", "ka"]; KAHRAMANLAR = ACIK; // Clay Hero: beş özgün kostüm // 1. oyunda açılan kostümler varsa yalnız onlar seçilir
   var SEKER = ["j_ayi", "j_kola", "s_lolipop", "j_yumurta", "s_yildiz"];   // beş çeşit: eşleşme bulmak kolay olsun (s_mor sonraki bölümlere)           // jelibonlar ve şekerler
   var SRENK = ["#e23b2e", "#8a5a2b", "#2f8fe0", "#fff3c4", "#f7d514", "#8d4fc4"];
@@ -75,7 +76,7 @@
   ["touchstart", "mousedown", "keydown"].forEach(function (o) { addEventListener(o, sesAc, true); });
 
   // ---------- ekranlar ----------
-  var D = { ekran: "kapak", kahraman: ACIK.length ? ACIK[ACIK.length - 1] : "e4", oyun: null };
+  var D = { ekran: "kapak", kahraman: ACIK.length ? (ACIK.indexOf(SECILI_K) >= 0 ? SECILI_K : ACIK[ACIK.length - 1]) : "e4", oyun: null };
   function ekranAc(ad) {
     D.ekran = ad;
     ["kapak", "secim", "sonuc"].forEach(function (e) { $(e).classList.toggle("acik", e === ad); });

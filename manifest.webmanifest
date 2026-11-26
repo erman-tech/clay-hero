@@ -1,0 +1,17 @@
+{
+  "name": "Clay Hero",
+  "short_name": "Clay Hero",
+  "description": "Make your own clay hero and save the world in five games.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#1a1438",
+  "theme_color": "#1a1438",
+  "icons": [
+    { "src": "ortak/ikon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "ortak/ikon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "ortak/ikon-maske-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
