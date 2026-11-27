@@ -205,7 +205,7 @@
       try { localStorage.setItem("ch_final", "1"); } catch (e) {}
     } else {
       $("sonucBaslik").textContent = "Out of simits!";
-      $("sonucYazi").textContent = "There are still " + uzayliSay(o) + " aliens in the tower (out of " + o.toplam + "). Aim for the columns at the bottom!";
+      $("sonucYazi").textContent = "Aliens left in the tower: " + uzayliSay(o) + " (out of " + o.toplam + "). Aim for the columns at the bottom!";
     }
     $("devam").style.display = kazandi ? "" : "none";   // kule yıkılınca hikâye Uzaylı Tırtıl oyunuyla sürer
     cal(kazandi ? "a_fkazan" : "a_fkayip", 1); if (kazandi) cal("e_zafer", 0.6); rekorGoster();

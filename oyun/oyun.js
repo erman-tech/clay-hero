@@ -107,7 +107,7 @@
 
   // ---------- filmler ----------
   var SEHIR_SN = [4.5, 5.2, 5.9, 6.6, 7.3], filmBitince = null;
-  var FILM_YOL = { giris: "ortak/giris", ufo_kirmizi_v2: "ortak/ufo", us_kirmizi_v2: KAHRAMAN.gorunus + "/us", tokyo_kirmizi_v2: KAHRAMAN.gorunus + "/tokyo", paris_kirmizi_v2: KAHRAMAN.gorunus + "/paris", la_kirmizi_v2: KAHRAMAN.gorunus + "/la" };
+  var FILM_YOL = { giris: "ortak/giris", donusum: KAHRAMAN.gorunus + "/donusum", ufo_kirmizi_v2: "ortak/ufo", us_kirmizi_v2: KAHRAMAN.gorunus + "/us", tokyo_kirmizi_v2: KAHRAMAN.gorunus + "/tokyo", paris_kirmizi_v2: KAHRAMAN.gorunus + "/paris", la_kirmizi_v2: KAHRAMAN.gorunus + "/la" };
   function filmOynat(ad, bitince) {
     if (!FILM_YOL[ad]) { if (bitince) bitince(); return; }
     film.dataset.ad = ad; var fu = "../filmler/" + FILM_YOL[ad] + ".mp4"; if (film.getAttribute("src") !== fu) film.src = fu; else { try { film.currentTime = 0; } catch (e) {} } filmBitince = bitince; // önceden yüklenen film baştan indirilmez
@@ -170,7 +170,7 @@
       var tg = SEHIRLER[TEST].gecis, tb = function () { D.sehir = TEST; oyunBaslat(); };
       if (tg) filmOynat(tg[D.secim], tb); else tb(); return;
     }
-    filmOynat("giris", function () { sec("iyi"); }); });
+    filmOynat("giris", function () { filmOynat("donusum", function () { sec("iyi"); }); }); });
 
   // ---------- Görevler merkezi ----------
   // İlk görev bittikten sonra filmden sonra açılır: açılan kostümlerden biri seçilir, biten ya da sıradaki görev oynanır.
@@ -742,7 +742,7 @@
     for (i = 0; i < 3; i++) ciz(R.kalp, 46 + i * 62, 78, 0.68, false, i < k.can ? 1 : 0.22);
     c.fillStyle = "rgba(20,25,60,.55)"; yuvarlak(22, 92, 190, 22, 11); c.fill();
     c.fillStyle = D.secim === "iyi" ? "#ff5a4a" : "#ff3030"; yuvarlak(25, 95, Math.max(0, 184 * k.yakit), 16, 8); c.fill();
-    yazi("flight power", 222, 110, 18, "#fff");
+    yazi("flight", 222, 110, 18, "#fff");
     yazi("shots " + "●".repeat(Math.floor(k.mermi == null ? 5 : k.mermi)) + "○".repeat(5 - Math.floor(k.mermi == null ? 5 : k.mermi)), 330, 110, 18, "#ffd23a");
     if (kostum().guc) { // kostüm gücü göstergesi: dolunca düğme (Z tuşu) ile kullanılır
       var ninja = kostum().guc !== "zaman", renkG = kostum().guc === "renk", dubG = kostum().guc === "dublor", zh = o.durSn > 0 ? o.durSn / 3.5 : 1 - Math.max(0, o.durBekle || 0) / kostum().gucBekle;

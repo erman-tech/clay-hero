@@ -1,7 +1,7 @@
 /* Clay Hero: çevrimdışı katman. SURUM satırını oyun_kaynak/uygulama_bagla.py yazar; elle değiştirme.
    Kural: sayfa ve kod ÖNCE internetten (yeni sürüm hemen gelsin), olmazsa kayıttan; görsel, ses ve film ÖNCE kayıttan.
    Film dosyaları parça parça istenir (Range); kayıttaki tam dosyadan istenen parça kesilip verilir. */
-var SURUM = "99c330d670";
+var SURUM = "9a387d32d8";
 var KOD = "ch-kod", MEDYA = "ch-medya";
 var MEDYA_UZ = /\.(png|jpg|jpeg|webp|mp3|mp4|webmanifest)$/i;
 

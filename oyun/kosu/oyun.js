@@ -18,7 +18,7 @@
 
   // ---------- seçilen kahraman ----------
   var GORUNUSLER = ["duz_siyah_acik", "dikenli_siyah_acik", "duz_kahve_acik", "dikenli_kahve_acik", "duz_sari_acik", "dikenli_sari_acik", "duz_siyah_bugday", "dikenli_siyah_bugday", "duz_kahve_bugday", "dikenli_kahve_bugday", "duz_siyah_koyu", "dikenli_siyah_koyu"];
-  var KOSU_HAZIR = ["dikenli_kahve_acik"]; // arkadan koşu pozları hazır olan görünüşler (oyun_kur2.py doldurur); öbürleri varlik/ içindeki yedek pozla oynar
+  var KOSU_HAZIR = ["duz_siyah_acik", "dikenli_siyah_acik", "duz_kahve_acik", "dikenli_kahve_acik", "duz_sari_acik", "dikenli_sari_acik", "duz_siyah_bugday", "dikenli_siyah_bugday", "duz_kahve_bugday", "dikenli_kahve_bugday", "duz_siyah_koyu", "dikenli_siyah_koyu"]; // arkadan koşu pozları hazır olan görünüşler (oyun_kur2.py doldurur); öbürleri varlik/ içindeki yedek pozla oynar
   var BAG = new URLSearchParams(location.search);
   var CH = (function () { var k = {}; try { k = JSON.parse(localStorage.getItem("clayHero") || "{}") || {}; } catch (e) {} var g = BAG.get("h") || (k.sac + "_" + k.renk + "_" + k.ten);
     return { gorunus: GORUNUSLER.indexOf(g) >= 0 ? g : "dikenli_kahve_acik" }; })();
