@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hamur Kahraman 2: Uzaylı Tırtıl</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #101a3a; overflow: hidden; touch-action: none;
+    font-family: "Arial Rounded MT Bold", "Chalkboard SE", "Trebuchet MS", sans-serif; user-select: none; -webkit-user-select: none; }
+  #sahne { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; transform-origin: 0 0; overflow: hidden; background: #16224d; }
+  #sahne > * { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; }
+  canvas, video { display: block; }
+  video { object-fit: contain; background: #16224d; }
+  .ekran { display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: #fff; }
+  .ekran.acik { display: flex; }
+  .hamur { border: 0; cursor: pointer; font: inherit; font-size: 44px; color: #fff; padding: 22px 54px; border-radius: 40px;
+    box-shadow: 0 10px 0 rgba(0,0,0,.35), inset 0 -8px 0 rgba(0,0,0,.18), inset 0 6px 0 rgba(255,255,255,.28); transition: transform .08s; }
+  .hamur:active { transform: translateY(6px); }
+  .kirmizi { background: #e23b2e; } .sari { background: #f2b61e; color: #3a2400; } .mavi { background: #2f7fd6; }
+  #kapak { background: #16224d; justify-content: center; }
+  #kapak .kutu { margin: 0 0 330px 0; text-align: center; }
+  #kapak p { font-size: 22px; margin: 16px 0 0; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
+  #kapak .imza { position: absolute; left: 0; top: auto; bottom: 60px; width: 720px; text-align: center; height: auto; font-size: 24px; color: #ffd23a; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
+  #kapak .geri { position: absolute; left: 24px; top: 20px; width: auto; height: auto; font-size: 22px; color: #fff; text-decoration: none;
+    background: rgba(20,30,70,.6); padding: 10px 20px; border-radius: 22px; }
+  #gec { left: auto; top: auto; right: 28px; bottom: 26px; width: auto; height: auto; font-size: 24px; padding: 12px 26px; display: none; }
+  #secim { background: #1b2a66; justify-content: flex-start; }
+  #secim h1 { font-size: 46px; margin: 210px 0 30px; text-shadow: 0 5px 0 rgba(0,0,0,.4); }
+  #kartlar { display: grid; grid-template-columns: repeat(4, 156px); gap: 26px 16px; }
+  #kartlar button { width: 156px; height: 238px; border: 0; padding: 0; border-radius: 26px; cursor: pointer; background: #dfe0e6 center/cover no-repeat;
+    box-shadow: 0 8px 0 rgba(0,0,0,.4), inset 0 0 0 6px rgba(255,255,255,.55); transition: transform .08s; }
+  #kartlar button:active { transform: translateY(5px) scale(.97); }
+  #karistir { left: auto; right: 20px; top: 12px; bottom: auto; width: auto; height: auto; font-size: 22px; padding: 12px 22px; display: none; }
+  #sonuc { background: rgba(16,26,58,.8); }
+  #sonuc h1 { font-size: 50px; margin: 0 30px 12px; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
+  #sonuc h2 { font-size: 26px; margin: 0 50px 18px; font-weight: normal; }
+  #yildizlar { font-size: 80px; letter-spacing: 12px; margin-bottom: 22px; color: #ffd23a; text-shadow: 0 6px 0 rgba(0,0,0,.4); min-height: 20px; }
+  #sonuc .dugmeler { display: flex; flex-direction: column; gap: 26px; }
+  #sonuc .hamur { font-size: 30px; padding: 16px 34px; }
+  /* Telefon oyunun yönünde tutulmuyorsa "çevir" işareti */
+  #dondur { position: fixed; inset: 0; z-index: 50; background: #101a3a; color: #fff; display: none; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; font-size: 26px; font-family: inherit; }
+  #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
+  @keyframes don { 0%, 20% { transform: rotate(90deg); } 60%, 100% { transform: rotate(0deg); } }
+</style>
+<link rel="stylesheet" href="../../ortak/menu.css?v=3">
+<!--uyg--><link rel="manifest" href="../../manifest.webmanifest"><meta name="theme-color" content="#1a1438"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Clay Hero"><link rel="apple-touch-icon" href="../../ortak/ikon-180.png"><link rel="icon" href="../../ortak/ikon-192.png"><!--/uyg-->
+</head>
+<body>
+<div id="sahne">
+  <canvas id="tuval" width="720" height="1280"></canvas>
+  <video id="film" playsinline preload="auto" style="display:none"></video>
+  <div id="kapak" class="ekran acik">
+    <div class="kutu"><h1 style="font-size:64px;color:#ffd23a;margin:0 30px 40px">Uzaylı Tırtıl</h1><button id="basla" class="hamur kirmizi">▶ BAŞLA</button>
+    <p>Sesi açmayı unutma!</p></div>
+  </div>
+  <div id="secim" class="ekran">
+    <h1>Kahramanını seç!</h1>
+    <div id="kartlar"></div>
+  </div>
+  <div id="sonuc" class="ekran">
+    <h1 id="sonucBaslik"></h1>
+    <h2 id="sonucYazi"></h2>
+    <div id="yildizlar"></div>
+    <div class="dugmeler">
+      <button id="londraGit" class="hamur kirmizi">✈ Londra'ya hazırım!</button>
+      <button id="tekrar" class="hamur sari">Baştan başla</button>
+      <button id="kacis" class="hamur kirmizi">🚀 Gezegenden kaçış</button>
+      <button id="yeni" class="hamur sari">Yeni oyun</button>
+      <button id="degistir" class="hamur mavi">Kahraman değiştir</button>
+    </div>
+  </div>
+  <button id="karistir" class="hamur mavi">🔀 Karıştır</button>
+  <button id="gec" class="hamur sari">Geç ▶</button>
+</div>
+<div id="dondur"><div class="tel"></div>Bu bölüm dik oynanır.<br>Telefonu dik tut!</div>
+<script>(function () { var dik = true; function k() { var y = innerWidth > innerHeight * 1.15, d = innerHeight > innerWidth * 1.15; document.getElementById("dondur").style.display = ("ontouchstart" in window) && (dik ? y : d) ? "flex" : "none"; } addEventListener("resize", k); k(); })();</script>
+<script src="../../ortak/menu.js?v=3" data-oyun="tirtil" data-ana="../../menu_tr.html" data-yan="sag"></script>
+<script src="oyun.js"></script>
+</body>
+</html>

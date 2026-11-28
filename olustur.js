@@ -6,9 +6,11 @@
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var TEN = [["acik", "Light", "#f3c7a2"], ["bugday", "Tan", "#b9825a"], ["koyu", "Deep", "#6b422b"]];
-  var RENK = [["siyah", "Black", "#2f2b2d"], ["kahve", "Brown", "#7a4d2d"], ["sari", "Blond", "#e9b949"]];
-  var SAC = [["duz", "Neat"], ["dikenli", "Spiky"]];
+  var TRD = document.documentElement.lang === "tr", MENU = TRD ? "menu_tr.html" : "menu.html";   // 28 Kas 2026: Türkçe sürüm index_tr.html (oyun_kaynak/sayfa_tr.py)
+  function T(en, tr) { return TRD ? tr : en; }
+  var TEN = [["acik", T("Light", "Açık"), "#f3c7a2"], ["bugday", T("Tan", "Buğday"), "#b9825a"], ["koyu", T("Deep", "Esmer"), "#6b422b"]];
+  var RENK = [["siyah", T("Black", "Siyah"), "#2f2b2d"], ["kahve", T("Brown", "Kahve"), "#7a4d2d"], ["sari", T("Blond", "Sarı"), "#e9b949"]];
+  var SAC = [["duz", T("Neat", "Düz")], ["dikenli", T("Spiky", "Dikenli")]];
   // filmi olan birleşimler: ten -> saç renkleri (her biri iki saç modeliyle)
   var VAR = { acik: ["siyah", "kahve", "sari"], bugday: ["siyah", "kahve"], koyu: ["siyah"] };
   var K = { sac: "dikenli", renk: "kahve", ten: "acik", isim: "" };
@@ -17,16 +19,16 @@
   function gecerli(k) { return !!VAR[k.ten] && VAR[k.ten].indexOf(k.renk) >= 0 && (k.sac === "duz" || k.sac === "dikenli"); }
   if (!gecerli(K)) { K.sac = "dikenli"; K.renk = "kahve"; K.ten = "acik"; }
   // kahraman zaten yapılmışsa doğrudan ana menü açılır; "Change hero" ?edit=1 ile gelir
-  if (K.isim && !/[?&]edit=1/.test(location.search)) { location.replace("menu.html"); return; }
+  if (K.isim && !/[?&]edit=1/.test(location.search)) { location.replace(MENU); return; }
 
   function ad(k) { return k.sac + "_" + k.renk + "_" + k.ten; }
   function sakla() { try { localStorage.setItem("clayHero", JSON.stringify(K)); } catch (h) { /* yoksay */ } }
-  function ciz() { $("figur").src = "portre/" + ad(K) + ".jpg"; $("figur").alt = "Your clay hero"; }
+  function ciz() { $("figur").src = "portre/" + ad(K) + ".jpg"; $("figur").alt = T("Your clay hero", "Hamur kahramanın"); }
 
   function dugme(kap, secili, kilitli, etiket, ic, tikla) {
     var d = document.createElement("button"); d.type = "button"; d.className = "sec" + (secili ? " secili" : "");
     d.setAttribute("aria-label", etiket); d.setAttribute("aria-pressed", secili ? "true" : "false");
-    if (kilitli) { d.disabled = true; d.setAttribute("aria-label", etiket + " (coming soon)"); var y = document.createElement("span"); y.className = "yakinda"; y.textContent = "SOON"; d.appendChild(y); }   // filmi olmayan birleşim: seçilemez, "SOON" yazar
+    if (kilitli) { d.disabled = true; d.setAttribute("aria-label", etiket + T(" (coming soon)", " (yakında)")); var y = document.createElement("span"); y.className = "yakinda"; y.textContent = T("SOON", "YAKINDA"); d.appendChild(y); }   // filmi olmayan birleşim: seçilemez, "SOON" yazar
     d.appendChild(ic); d.addEventListener("click", tikla); kap.appendChild(d);
   }
   function top(renk) { var t = document.createElement("div"); t.className = "renk"; t.style.background = renk; return t; }
@@ -55,8 +57,8 @@
     K.ten = t; K.renk = r; K.sac = SAC[Math.floor(Math.random() * 2)][0]; degisti();
   });
   $("hazir").addEventListener("click", function () {
-    var isim = (K.isim || "").trim(); if (!isim) { $("durum").textContent = "Give your hero a name first."; $("isim").focus(); return; }
-    sakla(); $("durum").textContent = isim + " is ready!"; location.href = "menu.html"; // ana menü; kahraman localStorage "clayHero"dan okunur
+    var isim = (K.isim || "").trim(); if (!isim) { $("durum").textContent = T("Give your hero a name first.", "Önce kahramanına bir ad ver."); $("isim").focus(); return; }
+    sakla(); $("durum").textContent = isim + T(" is ready!", " hazır!"); location.href = MENU; // ana menü; kahraman localStorage "clayHero"dan okunur
   });
 
   ciz(); secenekler();
