@@ -108,7 +108,11 @@
       if (!koseYakin(o, a, 300) && !koseYakin(o, a + boy, 300)) o.yol.push({ a: a, b: a + boy, k: (rasgele(o) < 0.5 ? -1 : 1) * (0.00011 + rasgele(o) * 0.00014) });
       o.sonrakiEgri = a + boy + 300 + rasgele(o) * 1400;
     }
-    while (o.sonrakiSus < uzak) { o.susler.push({ s: o.sonrakiSus, yan: rasgele(o) < 0.5 ? -1 : 1, tur: rasgele(o) < 0.62 ? "fener" : "tabela", renk: Math.floor(rasgele(o) * 4), boy: 0.85 + rasgele(o) * 0.4 }); o.sonrakiSus += 260 + rasgele(o) * 240; }
+    while (o.sonrakiSus < uzak) { // 28 Kas 2026: giriş filmindeki gibi iki yanda direkler, aralarında fenerli ip
+      var rk = Math.floor(rasgele(o) * 4);
+      o.susler.push({ s: o.sonrakiSus, yan: -1, tur: "direk", renk: rk, ara: DIREK_ARA }); o.susler.push({ s: o.sonrakiSus, yan: 1, tur: "direk", renk: rk + 1, ara: DIREK_ARA });
+      o.sonrakiSus += DIREK_ARA;
+    }
   }
   function koseEkle(o) {
     var s = o.s + 2900, yon = rasgele(o) < 0.5 ? -1 : 1;
@@ -242,6 +246,7 @@
     c.lineWidth = boy / 5; c.strokeStyle = "rgba(20,25,60,.85)"; c.lineJoin = "round"; c.strokeText(m, x, y); c.fillStyle = renk || "#fff"; c.fillText(m, x, y);
   }
   function golge(x, y, g, alfa) { c.fillStyle = "rgba(20,15,40," + (alfa || 0.32) + ")"; c.beginPath(); c.ellipse(x, y, g, g * 0.22, 0, 0, 7); c.fill(); }
+  var DIREK_ARA = 340, DIREK_BOY = 250;   // yol kenarı direkleri: aralık ve yükseklik (filmdeki fenerli ipler)
   var BOY = { bariyer: 135, kapi: 400, blok: 330, onigiri: 80, dron: 150 };
   var NEON = ["#39e6ff", "#ff5fd0", "#ffd23a", "#7dff8a"];
 
@@ -261,29 +266,37 @@
       var bos = !!boslukta(o, o.s + zz);
       if (bos) { onceBos = true; continue; }
       // kenar yüzü: yolun iki yanında koyu şerit (çatının kalınlığı)
-      c.fillStyle = "#2a1c4a"; c.fillRect(cx - gen - 16 * t, y, 2 * gen + 32 * t, 3.6);
+      c.fillStyle = "#2a1c4a"; c.fillRect(cx - gen - 40 * t, y, 2 * gen + 80 * t, 3.6);
       v = ((zh - ((zz + o.s) * olc) % zh) % zh + zh) % zh; sy = Math.min(zh - 1, Math.floor(v)); sh = Math.max(1, Math.min(zh - sy, Math.ceil(3 * olc / (t * t) * (ZK / (TABAN - UFUK)))));
       c.drawImage(z, 0, sy, z.naturalWidth, sh, cx - gen, y, 2 * gen, 3.6);
-      if (y < UFUK + 200) { c.fillStyle = "rgba(150,95,200," + (0.92 * (1 - (y - UFUK) / 200)).toFixed(3) + ")"; c.fillRect(cx - gen - 16 * t, y, 2 * gen + 32 * t, 3.6); } // ufuk sisi: yalnız yolun uzak ucu şehrin rengine karışır
-      if (onceBos) { c.fillStyle = "#1b1233"; c.fillRect(cx - gen - 16 * t, y - 26 * t, 2 * gen + 32 * t, 26 * t + 1); c.fillStyle = "rgba(255,95,208,.75)"; c.fillRect(cx - gen, y - 2, 2 * gen, 4 * t + 1); onceBos = false; } // boşluğun ön duvarı ve kenar ışığı
+      c.fillStyle = "#e46aa2"; c.fillRect(cx - gen - 34 * t, y, 34 * t, 3.6); c.fillRect(cx + gen, y, 34 * t, 3.6);   // filmdeki pembe kaldırım: üst yüz
+      c.fillStyle = "#f59cc4"; c.fillRect(cx - gen - 6 * t, y, 5 * t, 3.6); c.fillRect(cx + gen + 1 * t, y, 5 * t, 3.6);   // kaldırımın yola bakan açık kenarı
+      if (y < UFUK + 200) { c.fillStyle = "rgba(150,95,200," + (0.92 * (1 - (y - UFUK) / 200)).toFixed(3) + ")"; c.fillRect(cx - gen - 40 * t, y, 2 * gen + 80 * t, 3.6); } // ufuk sisi: yalnız yolun uzak ucu şehrin rengine karışır
+      if (onceBos) { c.fillStyle = "#1b1233"; c.fillRect(cx - gen - 40 * t, y - 26 * t, 2 * gen + 80 * t, 26 * t + 1); c.fillStyle = "rgba(255,95,208,.75)"; c.fillRect(cx - gen, y - 2, 2 * gen, 4 * t + 1); onceBos = false; } // boşluğun ön duvarı ve kenar ışığı
     }
-    // kenar neonları: yolun iki yanında parlayan çizgi
-    c.save(); c.lineWidth = 5; c.lineCap = "round"; c.shadowBlur = 16;
-    [-1, 1].forEach(function (yan) {
-      c.strokeStyle = yan < 0 ? "#ff5fd0" : "#39e6ff"; c.shadowColor = c.strokeStyle; var ciziyor = false; c.beginPath();
-      for (var zq = -200; zq <= 2600; zq += 80) {
-        if (boslukta(o, o.s + zq)) { ciziyor = false; continue; }
-        var tq = oran(zq), xq = G / 2 + (yan * (YOL + 6) + kayma(zq)) * tq, yq = ey(zq);
-        if (ciziyor) c.lineTo(xq, yq); else { c.moveTo(xq, yq); ciziyor = true; }
-      }
-      c.globalAlpha = 0.85; c.stroke();
-    });
-    c.restore();
   }
   function susCiz(o, q, z) { // yol kenarı: fener direği, neon tabela, köşe oku (kodla çizilir, hamur renkleri)
     var t = oran(z); if (z > 2700 || z < -250) return; var alfa = z > 2300 ? (2700 - z) / 400 : 1, x = ex(q.yan * (YOL + 110), z), y = ey(z), b = (q.boy || 1) * t;
     c.save(); c.globalAlpha = alfa;
-    if (q.tur === "fener") {
+    if (q.tur === "direk") { // filmdeki gibi koyu direk; bir sonraki direğe sarkan ip ve ipte asılı iki fener
+      if (boslukta(o, o.s + z)) { c.restore(); return; }
+      var dx = ex(q.yan * (YOL + 64), z), dt2 = DIREK_BOY * t, z2 = z + q.ara, t2 = oran(z2), x2 = ex(q.yan * (YOL + 64), z2), y2 = ey(z2) - DIREK_BOY * t2, x1 = dx, y1 = y - dt2;
+      if (z2 < 2700 && !boslukta(o, o.s + z2)) {
+        var mx = (x1 + x2) / 2, my = (y1 + y2) / 2 + 46 * (t + t2) / 2;
+        c.strokeStyle = "#241838"; c.lineWidth = Math.max(1.5, 4 * t); c.beginPath(); c.moveTo(x1, y1); c.quadraticCurveTo(mx, my, x2, y2); c.stroke();
+        [0.36, 0.7].forEach(function (u, k) {
+          var lx = (1 - u) * (1 - u) * x1 + 2 * u * (1 - u) * mx + u * u * x2, ly = (1 - u) * (1 - u) * y1 + 2 * u * (1 - u) * my + u * u * y2, lb = t + (t2 - t) * u;
+          var hale = c.createRadialGradient(lx, ly + 26 * lb, 2, lx, ly + 26 * lb, 64 * lb); hale.addColorStop(0, "rgba(255,190,110,.55)"); hale.addColorStop(1, "rgba(255,190,110,0)");
+          c.fillStyle = hale; c.fillRect(lx - 64 * lb, ly - 38 * lb, 128 * lb, 128 * lb);
+          c.fillStyle = "#2a1c4a"; c.fillRect(lx - 1 * lb, ly, 2 * lb + 0.5, 6 * lb); c.fillRect(lx - 10 * lb, ly + 4 * lb, 20 * lb, 5 * lb); c.fillRect(lx - 10 * lb, ly + 46 * lb, 20 * lb, 5 * lb);
+          c.fillStyle = (q.renk + k) % 2 ? "#ffe2a8" : "#f0603e"; c.beginPath(); c.ellipse(lx, ly + 27 * lb, 17 * lb, 20 * lb, 0, 0, 7); c.fill();
+          c.fillStyle = "rgba(255,255,255,.32)"; c.beginPath(); c.ellipse(lx - 5 * lb, ly + 21 * lb, 5 * lb, 8 * lb, 0, 0, 7); c.fill();
+        });
+      }
+      c.fillStyle = "#2c1f46"; c.fillRect(dx - 8 * t, y1, 16 * t, dt2);
+      c.fillStyle = "#3e2e63"; c.fillRect(dx - 8 * t, y1, 5 * t, dt2);
+      c.fillStyle = "#241838"; c.fillRect(dx - 12 * t, y1 - 8 * t, 24 * t, 12 * t);
+    } else if (q.tur === "fener") {
       c.fillStyle = "#3a2a5e"; c.fillRect(x - 7 * b, y - 300 * b, 14 * b, 300 * b);
       c.fillRect(x - (q.yan > 0 ? 70 : 0) * b, y - 300 * b, 70 * b, 10 * b);
       var fx = x - q.yan * 58 * b, fy = y - 250 * b, isik = c.createRadialGradient(fx, fy, 2, fx, fy, 70 * b);
