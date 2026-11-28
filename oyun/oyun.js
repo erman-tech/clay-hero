@@ -33,7 +33,7 @@
   // değiştirilen sesler yeni adla: daha önce indirilmiş cihaz eski dosyayı kayıttan çalmaya devam etmesin
   var SES_DOSYA = { e_ag: "e_ag_v2", e_elektrik: "e_elektrik_v2" };
   function sesYolu(a) { return "ses/" + (SES_DOSYA[a] || a) + ".mp3"; }
-  sesAdlari = sesAdlari.filter(function (a) { return a !== "p_soru" && a !== "a_kazandin_u"; }); // seçim sorusu ve siyah kahraman anlatımı bu oyunda yok
+  sesAdlari = sesAdlari.filter(function (a) { return a !== "a_kazandin_u"; }); // siyah kahraman anlatımı bu oyunda yok (seçim sorusu 28 Kas itibarıyla var: en/p_soru)
   sesAdlari.forEach(function (a) { var s = new Audio(); s.preload = "auto"; s.src = sesYolu(a); yedek[a] = s; });
   yedek.muzik.loop = true; yedek.muzik.volume = 0.22;
   function sesAc() { // ilk dokunuşta çağrılır
@@ -128,7 +128,7 @@
   });
 
   function secimEkrani() {
-    $("secim").style.backgroundImage = "url(varlik/secim.jpg)";
+    $("secim").style.backgroundImage = "url(kahraman/" + KAHRAMAN.gorunus + "/secim.jpg)";
     ekranAc("secim"); cal("p_soru", 1);
   }
   function tarafOku() { try { var t = localStorage.getItem("hk_taraf"); return t === "iyi" || t === "kotu" ? t : null; } catch (e) { return null; } }
@@ -170,7 +170,7 @@
       var tg = SEHIRLER[TEST].gecis, tb = function () { D.sehir = TEST; oyunBaslat(); };
       if (tg) filmOynat(tg[D.secim], tb); else tb(); return;
     }
-    filmOynat("giris", function () { filmOynat("donusum", function () { sec("iyi"); }); }); });
+    filmOynat("giris", secimEkrani); });
 
   // ---------- Görevler merkezi ----------
   // İlk görev bittikten sonra filmden sonra açılır: açılan kostümlerden biri seçilir, biten ya da sıradaki görev oynanır.
@@ -208,7 +208,7 @@
     var ad = b.dataset.gorev, sira = !b.classList.contains("bitti"), seri = D.secim, kk = HK.seciliKostum(), bit = HK.bitenler();
     SIRA.forEach(function (s) { if (bit.indexOf(s) >= 0) D.kurtarilan[s] = true; });
     if (SEHIRLER[ad]) {
-      D.kostum = kostumSehri(kk);
+      D.kostum = kostumSehri(kk); if (!SEHIRLER[D.kostum] || !SEHIRLER[D.kostum].guc) D.kostum = null; // güçsüz (Klasik) kostümle şehir kendi kostümü ve gücüyle oynanır; güçlü kostüm seçildiyse o kalır (28 Kas: güçler kaybolmuştu)
       var bas = function () { D.sehir = ad; oyunBaslat(); }, gs = SEHIRLER[ad].gecis;
       if (sira && gs) filmOynat(gs[seri], bas); else bas(); // bitmemiş şehrin hikâye filmi izlenir; bitmiş şehrin tekrarında film yok
       return;
@@ -221,7 +221,7 @@
   if (SEHIRLER[TEST]) $("basla").textContent = "▶ TEST: " + SEHIRLER[TEST].ad;
   if (new URLSearchParams(location.search).get("tokyofilm") === "1") $("basla").textContent = "✈ Ready for Tokyo!";
   if (SEHIRLER[new URLSearchParams(location.search).get("devam")]) $("basla").textContent = "▶ Save " + SEHIRLER[new URLSearchParams(location.search).get("devam")].eki + "!";
-  $("evet").addEventListener("click", function () { sec("iyi"); });
+  $("evet").addEventListener("click", function () { filmOynat("donusum", function () { sec("iyi"); }); }); // soru → dönüşüm filmi → oyun
   $("hayir").addEventListener("click", function () { sec("kotu"); });
   $("tekrar").addEventListener("click", function () { oyunBaslat(); });
   // Karar: İstanbul'da kalırsa uzaylı tırtıl the hero için gelir (2. oyun); orada kazanınca yine Londra sorulur.
