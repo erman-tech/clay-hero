@@ -86,12 +86,12 @@
   }
   var filmBitince = null;
   function filmOynat(ad, bitince) {
-    film.src = "video/" + ad + ".mp4"; filmBitince = bitince; ekranAc("film");
+    film.src = "../../filmler/" + (ad === "giris_v2" ? CH.gorunus + "/tirtil_giris" : "ortak/tirtil_portal") + ".mp4"; filmBitince = bitince; ekranAc("film");
     var p = film.play(); if (p && p.catch) p.catch(function () {});
   }
   function filmBitti() { var f = filmBitince; filmBitince = null; film.pause(); if (f) f(); }
   film.addEventListener("ended", filmBitti);
-  film.addEventListener("error", function () { if (filmBitince) filmBitti(); }); // Clay Hero: portal filmi yok, kara ekranda kalmasın
+  film.addEventListener("error", function () { if (filmBitince) filmBitti(); }); // Clay Hero: film açılamazsa kara ekranda kalmasın
   $("gec").addEventListener("click", filmBitti);
   function secimAc() { muzikDur(); ekranAc("secim"); cal("p_sec", 1); }
   KAHRAMANLAR.forEach(function (k) {
@@ -100,7 +100,7 @@
     d.addEventListener("click", function () { D.kahraman = k; oyunBaslat(); });
     $("kartlar").appendChild(d);
   });
-  $("basla").addEventListener("click", function () { secimAc(); });
+  $("basla").addEventListener("click", function () { filmOynat("giris_v2", secimAc); });
   $("tekrar").addEventListener("click", function () { if (D.sonraki) D.bolum = (D.bolum || 1) + 1; D.sonraki = false; oyunBaslat(); });
   $("yeni").addEventListener("click", function () { muzikDur(); location.href = "../index.html"; });
   $("degistir").addEventListener("click", secimAc);
