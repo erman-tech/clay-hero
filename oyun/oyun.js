@@ -294,7 +294,7 @@
       t: 0, kam: 0, bitti: false, bitisSayac: 0, mesaj: "", mesajSn: 0, gorevSes: {},
       k: { x: 200, y: ZEMIN, vx: 0, vy: 0, yon: 1, yerde: true, yakit: 1, atSn: 0, bekleme: 0, can: 3, dokunulmaz: 0 },
       p: { x: 120, y: 480 },
-      platformlar: [], simitler: [], kotuler: [], sandiklar: [], mermiler: [], meteorlar: [], parcalar: [], esyalar: [],
+      platformlar: [], simitler: [], kotuler: [], sandiklar: [], mermiler: [], meteorlar: [], parcalar: [], esyalar: [], ucusIz: [],
       simit: 0, yakalanan: 0, meteorSn: 5, kral: null, kralGeldi: false, dalgalar: [], yildizlar: [], duman: null
     };
     [[900, 500], [1150, 420], [1900, 480], [2150, 400], [2400, 480], [3300, 470], [3600, 390], [4500, 500], [4750, 420], [5000, 340],
@@ -360,6 +360,35 @@
     parca(o, e.x, e.y - 40, D.secim === "iyi" ? "#cfe6ff" : "#ffd23a", 6);
   }
 
+  // ---------- uçuş efekti: hamur jet bulutu, ateş kıvılcımları, yıldızcıklar; kalkışta bulut halkası, sert inişte toz ----------
+  var JET_RENK = ["#ffd23a", "#ff9a3a", "#ff5a4a"];
+  function izEkle(o, x, y, vx, vy, r, sn, renk, tur) { o.ucusIz.push({ x: x, y: y, vx: vx, vy: vy, r: r, sn: sn, omur: sn, renk: renk, tur: tur }); }
+  function ucusEfekti(o, k, dt) {
+    var i, m, ayakX = k.x - k.yon * 8, ayakY = k.y - 24;
+    for (i = o.ucusIz.length - 1; i >= 0; i--) {
+      m = o.ucusIz[i]; m.sn -= dt; m.x += m.vx * dt; m.y += m.vy * dt;
+      if (m.tur === "bulut") { m.vx *= 1 - dt * 2.5; m.vy *= 1 - dt * 2.5; m.vy -= 40 * dt; } // bulut yavaşlar, hafifçe yükselir
+      else if (m.tur === "kivilcim") m.vy += 500 * dt;
+      if (m.sn <= 0) o.ucusIz.splice(i, 1);
+    }
+    if (k.ucuyor && !k.ucusOnce) // kalkış: ayakların altında hamur bulut halkası
+      for (i = 0; i < 12; i++) { var a = i / 12 * Math.PI * 2; izEkle(o, ayakX, ayakY + 10, Math.cos(a) * 260, Math.sin(a) * 90 + 60, 14 + Math.random() * 8, 0.6, "#fff4e0", "bulut"); }
+    if (k.ucuyor) {
+      var az = k.yakit < 0.2; // yakıt bitmek üzere: jet tekler
+      k.jetSn = (k.jetSn || 0) - dt;
+      if (k.jetSn <= 0) {
+        k.jetSn = az ? 0.09 : 0.03;
+        izEkle(o, ayakX + (Math.random() - 0.5) * 16, ayakY, -k.vx * 0.4 + (Math.random() - 0.5) * 90, 160 + Math.random() * 90, 12 + Math.random() * 10, 0.65, Math.random() < 0.5 ? "#fff4e0" : "#ffe9c2", "bulut");
+        if (!az) for (i = 0; i < 2; i++) izEkle(o, ayakX + (Math.random() - 0.5) * 12, ayakY, -k.vx * 0.3 + (Math.random() - 0.5) * 140, 240 + Math.random() * 160, 4 + Math.random() * 4, 0.4, JET_RENK[Math.floor(Math.random() * 3)], "kivilcim");
+      }
+      k.yildizSn = (k.yildizSn || 0) - dt;
+      if (k.yildizSn <= 0) { k.yildizSn = 0.11; izEkle(o, k.x - k.yon * 30 + (Math.random() - 0.5) * 40, k.y - 70 + (Math.random() - 0.5) * 60, -k.vx * 0.5 - k.yon * 40, (Math.random() - 0.5) * 40, 7 + Math.random() * 4, 0.6, "#fff7b0", "yildiz"); }
+    }
+    if (k.yerde && !k.yerdeOnce && (k.havaVy || 0) > 350) // sert iniş: iki yana toz bulutu
+      for (i = 0; i < 8; i++) { var yn = i % 2 ? 1 : -1; izEkle(o, k.x + yn * 14, k.y - 6, yn * (120 + Math.random() * 160), -20 - Math.random() * 40, 10 + Math.random() * 8, 0.5, "#f0dcc0", "bulut"); }
+    k.ucusOnce = k.ucuyor; k.yerdeOnce = k.yerde; k.havaVy = k.yerde ? 0 : k.vy;
+  }
+
   function guncelle(dt) {
     var o = D.oyun; if (!o) return;
     o.t += dt; if (o.mesajSn > 0) o.mesajSn -= dt; if (o.bonusSn > 0) o.bonusSn -= dt;
@@ -402,6 +431,7 @@
       if (k.x > m.x - 20 && k.x < m.x + m.g + 20 && eskiY <= m.y + 2 && k.y >= m.y) { k.y = m.y; k.vy = 0; k.yerde = true; }
     }
     if (k.yerde) k.yakit = Math.min(1, k.yakit + dt * 1.2);
+    ucusEfekti(o, k, dt);
     if (k.dokunulmaz > 0) k.dokunulmaz -= dt;
     if (k.atSn > 0) k.atSn -= dt;
     if (k.bekleme > 0) k.bekleme -= dt;
@@ -607,11 +637,16 @@
   // ---------- çizim ----------
   function kare(sn) { return Math.floor(D.oyun.t * 8 + (sn || 0)); }        // stop motion: saniyede 8 poz
   function titre(tohum) { var n = Math.sin((kare() + tohum) * 12.9898) * 43758.5453; return ((n - Math.floor(n)) - 0.5) * 2.4; }
-  function ciz(im, x, y, olcek, cevir, alfa) { // x: merkez, y: alt kenar
+  function ciz(im, x, y, olcek, cevir, alfa, aci) { // x: merkez, y: alt kenar, aci: ortası etrafında eğme (radyan)
     if (!im || !im.complete || !im.naturalWidth) return;
     var g = im.naturalWidth * olcek, yk = im.naturalHeight * olcek;
-    c.save(); c.translate(Math.round(x), Math.round(y)); if (cevir) c.scale(-1, 1); if (alfa != null) c.globalAlpha = alfa;
+    c.save(); c.translate(Math.round(x), Math.round(y)); if (aci) { c.translate(0, -yk / 2); c.rotate(aci); c.translate(0, yk / 2); } if (cevir) c.scale(-1, 1); if (alfa != null) c.globalAlpha = alfa;
     c.drawImage(im, -g / 2, -yk, g, yk); c.restore();
+  }
+  function yildizCiz(x, y, r, renk) { // dört köşeli parıltı
+    c.fillStyle = renk; c.beginPath();
+    for (var j = 0; j < 8; j++) { var a = j * Math.PI / 4, rr = j % 2 ? r * 0.4 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+    c.closePath(); c.fill();
   }
   function yazi(m, x, y, boy, renk, hiza) {
     c.font = "bold " + boy + "px 'Arial Rounded MT Bold','Chalkboard SE','Trebuchet MS',sans-serif"; c.textAlign = hiza || "left";
@@ -675,11 +710,35 @@
     }
     // kahraman
     c.fillStyle = 'rgba(40,30,30,.22)'; c.beginPath(); c.ellipse(k.x, ZEMIN + 2, 38 - Math.min(20, (ZEMIN - k.y) / 20), 8, 0, 0, 7); c.fill();
+    // uçuş efekti (kahramanın arkasında): sıcak parıltı, hız çizgileri, jet bulutu, kıvılcım ve yıldızcıklar
+    if (k.ucuyor) {
+      var gx = k.x, gy = k.y - 75, gr = 90 + (kare() % 2) * 8, gp = c.createRadialGradient(gx, gy, 10, gx, gy, gr);
+      gp.addColorStop(0, "rgba(255,230,140,.45)"); gp.addColorStop(1, "rgba(255,200,80,0)");
+      c.fillStyle = gp; c.beginPath(); c.arc(gx, gy, gr, 0, 7); c.fill();
+      var hz = Math.hypot(k.vx, k.vy), ux = hz > 40 ? k.vx / hz : 0, uy = hz > 40 ? k.vy / hz : -1; // hareket yönü; çizgiler arkaya uzanır
+      c.strokeStyle = "rgba(255,255,255,.7)"; c.lineCap = "round";
+      for (i = 0; i < 5; i++) {
+        var t0 = (kare() * 17 + i * 23) % 40, yan = (i - 2) * 22, bx = gx - uy * yan - ux * (60 + t0), by = gy + ux * yan - uy * (60 + t0), uz = 40 + (i % 2) * 25;
+        c.lineWidth = i % 2 ? 4 : 6; c.beginPath(); c.moveTo(bx, by); c.lineTo(bx - ux * uz, by - uy * uz); c.stroke();
+      }
+    }
+    for (i = 0; i < o.ucusIz.length; i++) {
+      m = o.ucusIz[i]; var oz = Math.max(0, m.sn / m.omur); c.globalAlpha = Math.min(1, oz * 1.4);
+      if (m.tur === "yildiz") { yildizCiz(m.x, m.y, m.r * (0.6 + 0.4 * oz) * ((kare() + i) % 2 ? 1.15 : 0.9), m.renk); continue; }
+      var rr = m.tur === "bulut" ? m.r * (1.25 - 0.55 * oz) : m.r * oz; // bulut şişerek dağılır, kıvılcım küçülür
+      c.fillStyle = m.renk; c.beginPath(); c.arc(m.x, m.y, rr, 0, 7); c.fill();
+      if (m.tur === "bulut") { // hamur gölgesi ve parlaması
+        c.fillStyle = "rgba(120,80,60,.12)"; c.beginPath(); c.arc(m.x + rr * 0.25, m.y + rr * 0.3, rr * 0.55, 0, 7); c.fill();
+        c.fillStyle = "rgba(255,255,255,.6)"; c.beginPath(); c.arc(m.x - rr * 0.3, m.y - rr * 0.32, rr * 0.33, 0, 7); c.fill();
+      }
+    }
+    c.globalAlpha = 1;
     var poz = k.atSn > 0 ? "at" : !k.yerde ? "uc" : Math.abs(k.vx) > 25 ? (R[on + "kos4"] ? "kos" + (1 + Math.floor(k.adim / 46) % 4) : Math.floor(k.adim / 62) % 2 ? "kos1" : "kos2") : "dur";
+    var egim = k.ucuyor && poz === "uc" ? Math.max(-1, Math.min(1, k.vx / 310)) * 0.2 : 0, salla = k.ucuyor ? (kare() % 2 ? -3 : 3) : 0; // uçarken gidiş yönüne eğilir, poz poz süzülür
     if (!(k.dokunulmaz > 0 && kare() % 2 && Math.floor(o.t * 16) % 2) && !(o.duman && o.duman.sn > 0.4))
       if (k.egik && R[on + "egil"] && R[on + "egil"].naturalWidth) ciz(R[on + "egil"], k.x + k.yon * 14, k.y, 0.55, k.yon < 0); // eğilme: diz çökmüş, kolu ileride; uzanan kol tuvali öne genişlettiği için gövde k.x'e gelsin diye 14 px kaydırılır
       else if (k.egik) { c.save(); c.translate(Math.round(k.x), Math.round(k.y)); c.scale(1.12, 0.62); ciz(R[on + poz], 0, 0, 0.55, k.yon < 0); c.restore(); } // çömelme pozu yoksa basık çizim (geçici)
-      else ciz(R[on + poz], k.x + (poz === "dur" ? titre(1) * 0.6 : 0), k.y + (poz === "uc" ? -20 : 0), 0.55, k.yon < 0);
+      else ciz(R[on + poz], k.x + (poz === "dur" ? titre(1) * 0.6 : 0), k.y + (poz === "uc" ? -20 : 0) + salla, 0.55, k.yon < 0, null, egim);
     if (o.dublor) { // dublör: kahramanın duruş pozu + başının üstünde klaket; son saniyede titrer
       if (!(o.dublor.sn < 1 && kare() % 2)) { ciz(R[on + "dur"], o.dublor.x + titre(2), ZEMIN, 0.55, o.dublor.yon < 0); ciz(R.klaket, o.dublor.x, ZEMIN - 175, 0.3, false); }
     }
