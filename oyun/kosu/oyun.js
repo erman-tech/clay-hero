@@ -376,7 +376,15 @@
     if (o.mesajSn > 0 && o.mesaj) yazi(o.mesaj, G / 2, 430, o.mesaj.length > 30 ? 32 : 40);
   }
 
-  $("basla").addEventListener("click", baslat);
+  // giriş filmi (28 Kas 2026): yalnız ilk seviyede START'tan sonra oynar; Skip ile atlanır; açılamazsa ya da oynatılamazsa doğrudan oyun başlar
+  var film = $("film"), filmde = false;
+  function filmBitti() { if (!filmde) return; filmde = false; film.pause(); film.style.display = "none"; $("gec").style.display = "none"; baslat(); }
+  film.addEventListener("ended", filmBitti); film.addEventListener("error", filmBitti); $("gec").addEventListener("click", filmBitti);
+  $("basla").addEventListener("click", function () {
+    if (D.seviye > 0) { baslat(); return; }
+    filmde = true; film.src = "../../filmler/" + CH.gorunus + "/kosu_giris.mp4"; film.style.display = "block"; $("gec").style.display = "block";
+    var p = film.play(); if (p && p.catch) p.catch(function () { filmBitti(); });
+  });
   $("tekrar").addEventListener("click", baslat);
   $("yeni").addEventListener("click", function () { muzik(false); location.href = "../index.html"; });
   $("devam").addEventListener("click", function () { muzik(false); location.href = "../index.html?devam=tokyo"; });
