@@ -7,8 +7,8 @@
 <style>
   html, body { margin: 0; height: 100%; background: #1a1438; overflow: hidden; touch-action: none;
     font-family: "Arial Rounded MT Bold", "Chalkboard SE", "Trebuchet MS", sans-serif; user-select: none; -webkit-user-select: none; }
-  #sahne { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; transform-origin: 0 0; overflow: hidden; background: #2a2060; }
-  #sahne > * { position: absolute; left: 0; top: 0; width: 720px; height: 1280px; }
+  #sahne { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #2a2060; }
+  #sahne > * { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
   canvas { display: block; }
   .ekran { display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: #fff; }
   .ekran.acik { display: flex; }
@@ -22,7 +22,7 @@
   #kapak p { font-size: 24px; margin: 22px 40px 0; text-shadow: 0 3px 0 rgba(0,0,0,.6); line-height: 1.4; }
   #kapak .geri { position: absolute; left: 24px; top: 20px; width: auto; height: auto; font-size: 22px; color: #fff; text-decoration: none;
     background: rgba(20,30,70,.6); padding: 10px 20px; border-radius: 22px; }
-  #kapak .imza { position: absolute; left: 0; top: auto; bottom: 60px; width: 720px; height: auto; font-size: 24px; color: #ffd23a; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
+  #kapak .imza { position: absolute; left: 0; top: auto; bottom: 40px; width: 1280px; height: auto; font-size: 24px; color: #ffd23a; text-shadow: 0 3px 0 rgba(0,0,0,.6); }
   #sonuc { background: rgba(26,20,56,.82); }
   #sonuc h1 { font-size: 50px; margin: 0 30px 12px; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
   #sonuc h2 { font-size: 26px; margin: 0 50px 30px; font-weight: normal; }
@@ -33,14 +33,14 @@
   #dondur { position: fixed; inset: 0; z-index: 50; background: #1a1438; color: #fff; display: none; align-items: center; justify-content: center;
     flex-direction: column; text-align: center; font-size: 26px; }
   #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
-  @keyframes don { 0%, 20% { transform: rotate(90deg); } 60%, 100% { transform: rotate(0deg); } }
+  @keyframes don { 0%, 20% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
 </style>
 <link rel="stylesheet" href="../../ortak/menu.css?v=2">
 <!--uyg--><link rel="manifest" href="../../manifest.webmanifest"><meta name="theme-color" content="#1a1438"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Clay Hero"><link rel="apple-touch-icon" href="../../ortak/ikon-180.png"><link rel="icon" href="../../ortak/ikon-192.png"><!--/uyg-->
 </head>
 <body>
 <div id="sahne">
-  <canvas id="tuval" width="720" height="1280"></canvas>
+  <canvas id="tuval" width="1280" height="720"></canvas>
   <div id="kapak" class="ekran acik">
     <h1>Save the Parrot</h1>
     <h2>Drones are carrying the parrot away over the rooftops of Tokyo. Run, dodge the obstacles and catch the drones! Three levels, each one faster.</h2>
@@ -59,7 +59,7 @@
 </div>
 <video id="film" playsinline preload="auto"></video>
 <button id="gec" class="hamur sari">Skip ▶</button>
-<div id="dondur"><div class="tel"></div>This game is played upright.<br>Hold your tablet upright!</div>
+<div id="dondur"><div class="tel"></div>This game is played sideways.<br>Turn your tablet sideways!</div>
 <script src="../../ortak/menu.js?v=2" data-oyun="kosu" data-ana="../../menu.html" data-yan="sol"></script>
 <script src="oyun.js"></script>
 </body>

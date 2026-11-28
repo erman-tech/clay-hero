@@ -1,4 +1,4 @@
-/* Clay Hero: Save the Parrot. Üç şeritli çatı koşusu (dik, 720×1280), üç seviye.
+/* Clay Hero: Save the Parrot. Üç şeritli çatı koşusu (28 Kas 2026'dan beri yatay, 1280×720), üç seviye.
    22 Kas 2026: "dönüşü yolu düzgün şekilde yapalım; oynanabilirlik zorlukları artsın; 3 seviye olsun, gittikçe zorlaşan;
    şu an bitirmek çok kolay ve grafik zayıf". Bu dosya the hero'in koşu oyunundan (hamur_kahraman_4) AYRI yazıldı; o oyun değişmedi.
    Yol artık gerçekten kıvrılır: yolun eğriliği (kappa) konuma bağlıdır, kamera kahramanın bulunduğu noktadaki yöne bakar,
@@ -7,12 +7,12 @@
    oyun_kur2.py bu dosyayı oyun/kosu/oyun.js olarak kopyalar ve KOSU_HAZIR listesini doldurur. */
 (function () {
   "use strict";
-  var G = 720, Y = 1280, $ = function (i) { return document.getElementById(i); };
+  var G = 1280, Y = 720, $ = function (i) { return document.getElementById(i); };
   var tuval = $("tuval"), c = tuval.getContext("2d"), sahne = $("sahne");
   function olcekle() {
     var o = Math.min(innerWidth / G, innerHeight / Y);
     sahne.style.transform = "translate(" + Math.round((innerWidth - G * o) / 2) + "px," + Math.round((innerHeight - Y * o) / 2) + "px) scale(" + o + ")";
-    $("dondur").style.display = innerWidth > innerHeight * 1.15 && innerHeight < 620 ? "flex" : "none";
+    $("dondur").style.display = innerHeight > innerWidth * 1.15 ? "flex" : "none";
   }
   addEventListener("resize", olcekle); olcekle();
 
@@ -36,7 +36,7 @@
   function muzik(ac) { try { if (ac) { var p = S.muzik.play(); if (p && p.catch) p.catch(function () {}); } else S.muzik.pause(); } catch (e) {} }
 
   // ---------- derinlik ----------
-  var UFUK = 470, TABAN = 1150, ZK = 430, SERIT = 205, YOL = 345, ZMAX = 3200, ADIM = 40, N = ZMAX / ADIM + 1;
+  var UFUK = 265, TABAN = 665, ZK = 430, SERIT = 255, YOL = 430, ZMAX = 3200, ADIM = 40, N = ZMAX / ADIM + 1;
   function oran(z) { return ZK / (ZK + z); }          // 1: kahramanın hizası, 0: ufuk
   function ey(z) { return UFUK + (TABAN - UFUK) * oran(z); }
   var KAYMA = new Float32Array(N);                      // ilerideki yolun yana kayması (dünya birimi), her karede yeniden hesaplanır
@@ -252,10 +252,10 @@
 
   function arkaCiz(o) { // gökyüzü ve şehir: dönüş açısı kadar yana kayar; görsel aynalanarak yan yana dizilir, ek yeri görünmez
     var im = R.arka; if (!im.complete || !im.naturalWidth) { c.fillStyle = "#7a4fb0"; c.fillRect(-80, -80, G + 160, Y + 160); return; }
-    var kay = -o.yon * 430, ilk = Math.floor((-80 - kay) / G), x;
-    for (var i = ilk; i <= ilk + 2; i++) {
-      x = i * G + kay;
-      if (((i % 2) + 2) % 2) { c.save(); c.translate(x + G, 0); c.scale(-1, 1); c.drawImage(im, 0, -80, G + 1, Y + 160); c.restore(); } else c.drawImage(im, x, -80, G + 1, Y + 160);
+    var W = Math.round((Y + 160) * im.naturalWidth / im.naturalHeight), kay = -o.yon * 430 + (G - W) / 2, ilk = Math.floor((-80 - kay) / W), x;   // görsel oranı korunur
+    for (var i = ilk; i * W + kay < G + 80; i++) {
+      x = i * W + kay;
+      if (((i % 2) + 2) % 2) { c.save(); c.translate(x + W, 0); c.scale(-1, 1); c.drawImage(im, 0, -80, W + 1, Y + 160); c.restore(); } else c.drawImage(im, x, -80, W + 1, Y + 160);
     }
   }
   function yolCiz(o) { // çatı yolu: doku satır satır, derinliğe göre daralır ve eğriliğe göre yana kayar; boşluklarda çizilmez
@@ -374,19 +374,19 @@
     for (i = 0; i < o.parcalar.length; i++) { var p = o.parcalar[i]; c.globalAlpha = Math.max(0, p.sn / p.ilk); c.fillStyle = p.renk; c.beginPath(); c.arc(p.x, p.y, p.r, 0, 7); c.fill(); } c.globalAlpha = 1;
     c.restore();
     // kenar karartması: göz ortada kalsın
-    var kar = c.createRadialGradient(G / 2, Y * 0.55, Y * 0.35, G / 2, Y * 0.55, Y * 0.78); kar.addColorStop(0, "rgba(20,10,40,0)"); kar.addColorStop(1, "rgba(20,10,40,.45)"); c.fillStyle = kar; c.fillRect(0, 0, G, Y);
-    if (kzn) { var pk = Math.min(1, (2.6 - o.bitis) / 1.2); resim(R.papagan_ag, G / 2 + (o.sx * SERIT + 150) * pk, 500 + (TABAN - 620) * pk, 300); }
+    var kar = c.createRadialGradient(G / 2, Y * 0.55, G * 0.3, G / 2, Y * 0.55, G * 0.62); kar.addColorStop(0, "rgba(20,10,40,0)"); kar.addColorStop(1, "rgba(20,10,40,.45)"); c.fillStyle = kar; c.fillRect(0, 0, G, Y);
+    if (kzn) { var pk = Math.min(1, (2.6 - o.bitis) / 1.2); resim(R.papagan_ag, G / 2 + (o.sx * SERIT + 150) * pk, UFUK + 40 + (TABAN - 150 - UFUK - 40) * pk, 260); }
     // köşe uyarısı
-    var k = aktifKose(o); if (k && o.durum === "oyna" && !(poz % 2 && k.s - o.s < 450)) yazi(k.yon > 0 ? "SWIPE RIGHT  ➜" : "⬅  SWIPE LEFT", G / 2, 560, 50, "#ffd23a");
+    var k = aktifKose(o); if (k && o.durum === "oyna" && !(poz % 2 && k.s - o.s < 450)) yazi(k.yon > 0 ? "SWIPE RIGHT  ➜" : "⬅  SWIPE LEFT", G / 2, 330, 50, "#ffd23a");
     // gösterge
     resim(R.kalp, 130, 96, 48, o.can > 0 ? 1 : 0.25);
-    if (o.gerisayim > 0) { yazi(o.L.ad + " starts in", G / 2, 520, 40, "#ffd23a"); yazi("" + Math.ceil(o.gerisayim), G / 2, 640, 150, "#fff"); }
+    if (o.gerisayim > 0) { yazi(o.L.ad + " starts in", G / 2, 250, 40, "#ffd23a"); yazi("" + Math.ceil(o.gerisayim), G / 2, 380, 150, "#fff"); }
     resim(R.onigiri, 130, 168, 54); yazi("" + o.onigiri, 170, 160, 34, "#ffd23a", "left");
-    c.fillStyle = "rgba(20,25,60,.6)"; c.beginPath(); c.roundRect(290, 58, 390, 30, 15); c.fill();
-    c.fillStyle = "#39d0e8"; c.beginPath(); c.roundRect(294, 62, Math.max(22, 382 * o.yakin), 22, 11); c.fill();
-    yazi("distance to drones", 440, 118, 22); yazi(o.L.ad + " / " + SEVIYE.length, 640, 118, 22, "#ffd23a");
-    if (o.t < 6 && o.sv === 0 && o.durum === "oyna") { yazi("Swipe: ← → lane", G / 2, 300, 34, "#ffd23a"); yazi("↑ jump   ↓ slide   at corners: swipe to turn", G / 2, 346, 28); }
-    if (o.mesajSn > 0 && o.mesaj) yazi(o.mesaj, G / 2, 430, o.mesaj.length > 30 ? 32 : 40);
+    c.fillStyle = "rgba(20,25,60,.6)"; c.beginPath(); c.roundRect(850, 40, 390, 30, 15); c.fill();
+    c.fillStyle = "#39d0e8"; c.beginPath(); c.roundRect(854, 44, Math.max(22, 382 * o.yakin), 22, 11); c.fill();
+    yazi("distance to drones", 1000, 100, 22); yazi(o.L.ad + " / " + SEVIYE.length, 1200, 100, 22, "#ffd23a");
+    if (o.t < 6 && o.sv === 0 && o.durum === "oyna") { yazi("Swipe: ← → lane", 40, 630, 30, "#ffd23a", "left"); yazi("↑ jump   ↓ slide", 40, 668, 26, null, "left"); yazi("at corners: swipe to turn", 40, 702, 26, null, "left"); }
+    if (o.mesajSn > 0 && o.mesaj) yazi(o.mesaj, G / 2, 215, o.mesaj.length > 30 ? 32 : 40);
   }
 
   // giriş filmi (28 Kas 2026): yalnız ilk seviyede START'tan sonra oynar; Skip ile atlanır; açılamazsa ya da oynatılamazsa doğrudan oyun başlar
