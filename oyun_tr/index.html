@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hamur Kahraman</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #101a3a; overflow: hidden; touch-action: none;
+    font-family: "Arial Rounded MT Bold", "Chalkboard SE", "Trebuchet MS", sans-serif; user-select: none; -webkit-user-select: none; }
+  #sahne { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #16224d; }
+  #sahne > * { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+  canvas, video { display: block; }
+  video { object-fit: cover; background: #16224d; }
+  .ekran { display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: #fff; }
+  .ekran.acik { display: flex; }
+  .hamur { border: 0; cursor: pointer; font: inherit; font-size: 44px; color: #fff; padding: 22px 54px; border-radius: 40px;
+    box-shadow: 0 10px 0 rgba(0,0,0,.35), inset 0 -8px 0 rgba(0,0,0,.18), inset 0 6px 0 rgba(255,255,255,.28); transition: transform .08s; }
+  .hamur:active { transform: translateY(6px); }
+  .kirmizi { background: #e23b2e; } .siyah { background: #23252b; } .sari { background: #f2b61e; color: #3a2400; } .mavi { background: #2f7fd6; }
+  #kapak { background: radial-gradient(circle at 30% 45%, #3a4fa8 0%, #1b2a66 55%, #101a3a 100%); flex-direction: row; gap: 70px; }
+  #kapak .kutu { text-align: center; }
+  #kapakPortre { position: static; width: 430px; height: 430px; border-radius: 60px; object-fit: cover; box-shadow: 0 14px 0 rgba(0,0,0,.35); }
+  #kapak h1 { font-size: 92px; margin: 0; color: #ffd23a; text-shadow: 0 8px 0 rgba(0,0,0,.4); }
+  #kapakIsim { font-size: 44px; margin: 6px 0 34px; text-shadow: 0 4px 0 rgba(0,0,0,.4); }
+  #kapak p { font-size: 24px; opacity: .95; margin: 22px 0 0; text-shadow: 0 3px 0 rgba(0,0,0,.4); }
+  #kapak .imza { position: absolute; left: 400px; top: auto; bottom: 24px; width: auto; height: auto; font-size: 26px; color: #ffd23a; text-shadow: 0 3px 0 rgba(0,0,0,.5); }
+  #kapak .geri { position: absolute; left: 24px; top: 20px; width: auto; height: auto; font-size: 22px; color: #fff; text-decoration: none;
+    background: rgba(20,30,70,.6); padding: 10px 20px; border-radius: 22px; }
+  #gec { left: auto; top: auto; right: 28px; bottom: 26px; width: auto; height: auto; font-size: 24px; padding: 12px 26px; display: none; }
+  #sehirler { top: auto; bottom: 34px; height: auto; display: none; justify-content: center; gap: 14px; pointer-events: none; }
+  #sehirler span { background: #f2b61e; color: #3a2400; font-size: 30px; padding: 10px 22px; border-radius: 26px; opacity: 0; transform: scale(.3) rotate(-8deg);
+    transition: all .35s cubic-bezier(.3,1.8,.5,1); box-shadow: 0 6px 0 rgba(0,0,0,.35), inset 0 -5px 0 rgba(0,0,0,.15); }
+  #sehirler span.gor { opacity: 1; transform: none; }
+  #secim { background: center/cover no-repeat; justify-content: flex-end; }
+  #secim .soru { background: rgba(255,255,255,.94); color: #1c1c1c; font-size: 46px; padding: 20px 44px; border-radius: 44px; margin-bottom: 26px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.3); }
+  #secim .dugmeler { display: flex; gap: 60px; margin-bottom: 46px; }
+  #secim .hamur small { display: block; font-size: 22px; opacity: .9; margin-top: 4px; }
+  #harita { background: center/cover no-repeat; justify-content: flex-start; }
+  #harita h1 { font-size: 60px; margin: 34px 0 6px; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
+  #harita h2 { font-size: 30px; margin: 0 0 16px; font-weight: normal; }
+  #kartlar { display: flex; gap: 16px; margin-top: 250px; }
+  .kart { width: 210px; padding: 16px 8px; border-radius: 30px; background: #3b4a7a; font-size: 28px; box-shadow: 0 8px 0 rgba(0,0,0,.35), inset 0 5px 0 rgba(255,255,255,.2); }
+  .kart small { display: block; font-size: 20px; margin-top: 6px; opacity: .9; }
+  .kart.tamam { background: #2e9b4a; }
+  #harita .dugmeler { display: flex; gap: 30px; margin-top: 30px; }
+  #harita .hamur { font-size: 30px; padding: 16px 34px; }
+  /* Profil ismi: ilk BAŞLA'da bir kez sorulur */
+  #isim { background: #16224d; }
+  #isim h1 { font-size: 54px; margin: 0 0 18px; text-shadow: 0 6px 0 rgba(0,0,0,.4); }
+  #isimGir { font: inherit; font-size: 40px; padding: 14px 24px; border-radius: 26px; border: 5px solid #ffd23a; width: 520px; text-align: center; color: #1b2a5e; }
+  #isim .hamur { font-size: 34px; padding: 16px 50px; margin-top: 22px; }
+  #isimEski { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; justify-content: center; max-width: 1000px; }
+  #isimEski button { font: inherit; font-size: 24px; color: #fff; background: #3d56b8; border: 0; border-radius: 20px; padding: 10px 22px; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.35); }
+  #merkezIsim { position: absolute; right: 22px; top: 16px; font: inherit; font-size: 22px; color: #fff; background: rgba(61,86,184,.9); border: 0; border-radius: 18px; padding: 8px 18px; cursor: pointer; }
+  #merkezPuan { position: absolute; left: 110px; top: 20px; font-size: 22px; color: #ffd23a; }
+  /* Görevler merkezi: açılan kostümler ve bölümler; filmden sonra, oyundan önce */
+  #merkez { background: linear-gradient(rgba(16,26,58,.7),rgba(16,26,58,.82)), url(varlik/dunya.jpg) center/cover; justify-content: flex-start; padding-top: 18px; }
+  #merkez h2 { font-size: 30px; margin: 6px 0 10px; color: #ffd23a; text-shadow: 0 4px 0 rgba(0,0,0,.4); }
+  #kostumler { display: flex; gap: 16px; justify-content: center; }
+  .kostum { width: 150px; height: 214px; border-radius: 26px; border: 5px solid transparent; background: #2c3f8f center 18px/auto 68% no-repeat; position: relative; cursor: pointer;
+    box-shadow: 0 7px 0 rgba(0,0,0,.35), inset 0 5px 0 rgba(255,255,255,.18); padding: 0; font: inherit; color: #fff; }
+  .kostum b { position: absolute; left: 0; right: 0; bottom: 30px; font-size: 19px; white-space: nowrap; }
+  .kostum small { position: absolute; left: 4px; right: 4px; bottom: 8px; font-size: 14px; opacity: .92; white-space: nowrap; overflow: hidden; }
+  .kostum.secili { border-color: #ffd23a; background-color: #3d56b8; transform: translateY(-6px); }
+  .kostum.secili::after { content: "✔"; position: absolute; top: 6px; right: 10px; color: #ffd23a; font-size: 26px; }
+  .kostum.kilit { filter: grayscale(1) brightness(.45); cursor: default; }
+  #gorevler { display: grid; grid-template-columns: repeat(5, 214px); gap: 14px; justify-content: center; }
+  .gorev { height: 104px; border-radius: 22px; border: 0; padding: 0; font: inherit; color: #fff; cursor: pointer; position: relative; overflow: hidden;
+    background: #3b4a7a center/cover no-repeat; box-shadow: 0 7px 0 rgba(0,0,0,.35); }
+  .gorev::before { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(10,16,40,.15), rgba(10,16,40,.78)); }
+  .gorev b, .gorev small { position: relative; display: block; text-shadow: 0 2px 0 rgba(0,0,0,.5); }
+  .gorev b { font-size: 23px; margin-top: 46px; } .gorev small { font-size: 16px; margin-top: 2px; }
+  .gorev.sira { outline: 5px solid #ffd23a; } .gorev.bitti small { color: #8dff9a; }
+  .gorev.kilit { filter: grayscale(1) brightness(.5); cursor: default; }
+  .gorev:not(.kilit):active, .kostum:not(.kilit):active { transform: translateY(5px); }
+  #dokunma { display: none; pointer-events: none; }
+  #dokunma button { position: absolute; width: 86px; height: 86px; border-radius: 43px; border: 3px solid rgba(255,255,255,.55); font-size: 38px; color: #fff;
+    background: rgba(20,30,70,.22); pointer-events: auto; touch-action: none; padding: 0; }
+  #dokunma button.bas { background: rgba(255,210,58,.45); }
+  /* ateş: sağ altta geniş görünmez alan; başparmak alanın neresine değse ateş eder. Görünen daire alanın ortasında. */
+  #atesAlan { position: absolute; right: 0; bottom: 0; width: 320px; height: 400px; pointer-events: auto; touch-action: none; }
+  #atesAlan .daire { position: absolute; right: 70px; bottom: 90px; width: 136px; height: 136px; border-radius: 68px; border: 4px solid rgba(255,255,255,.6);
+    background: rgba(20,30,70,.24); color: #fff; font-size: 62px; line-height: 128px; text-align: center; pointer-events: none; }
+  /* güç (zaman durdurma, dublör, renk, ninja): ateşin hemen üstünde, aynı büyüklükte daire ve geniş alan */
+  #zamanAlan { position: absolute; right: 0; bottom: 400px; width: 320px; height: 170px; pointer-events: auto; touch-action: none; }
+  #zamanAlan .daire { position: absolute; right: 80px; bottom: 14px; width: 116px; height: 116px; border-radius: 58px; border: 4px solid rgba(255,255,255,.6);
+    background: rgba(20,30,70,.24); color: #fff; font-size: 54px; line-height: 108px; text-align: center; pointer-events: none; }
+  #zamanAlan.bas .daire { background: rgba(255,210,58,.5); transform: scale(.94); }
+  #atesAlan.bas .daire { background: rgba(255,210,58,.5); transform: scale(.94); }
+  /* sol joystick: sol alt çeyrekte nereye dokunulursa orada açılır */
+  #joyAlan { position: absolute; left: 0; top: 240px; width: 360px; height: 480px; pointer-events: auto; touch-action: none; }
+  #joyTaban { position: absolute; width: 170px; height: 170px; margin: -85px 0 0 -85px; border-radius: 85px; border: 4px solid rgba(255,255,255,.45);
+    background: rgba(20,30,70,.22); left: 120px; top: 600px; pointer-events: none; opacity: .55; }
+  #joyTaban.acik { opacity: 1; }
+  #joyTopuz { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 38px;
+    background: rgba(255,210,58,.75); box-shadow: 0 4px 0 rgba(0,0,0,.3); }
+  /* Telefon oyunun yönünde tutulmuyorsa "çevir" işareti */
+  #dondur { position: fixed; inset: 0; z-index: 50; background: #101a3a; color: #fff; display: none; align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; font-size: 26px; font-family: inherit; }
+  #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
+  @keyframes don { 0%, 20% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
+</style>
+<link rel="stylesheet" href="../ortak/menu.css?v=3">
+<!--uyg--><link rel="manifest" href="../manifest.webmanifest"><meta name="theme-color" content="#1a1438"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Clay Hero"><link rel="apple-touch-icon" href="../ortak/ikon-180.png"><link rel="icon" href="../ortak/ikon-192.png"><!--/uyg-->
+</head>
+<body>
+<div id="sahne">
+  <canvas id="tuval" width="1280" height="720"></canvas>
+  <video id="film" playsinline preload="auto" style="display:none"></video>
+  <div id="sehirler"><span>İstanbul</span><span>Londra</span><span>Tokyo</span><span>Paris</span><span>Los Angeles</span></div>
+  <div id="kapak" class="ekran acik">
+    <img id="kapakPortre" alt="">
+    <div class="kutu"><h1>Hamur Kahraman</h1><div id="kapakIsim"></div><button id="basla" class="hamur kirmizi">▶ BAŞLA</button>
+    <p>Sesi açmayı unutma!</p></div>
+  </div>
+  <div id="secim" class="ekran">
+    <div class="soru">Dünyayı kurtarmaya cesaretin var mı?</div>
+    <div class="dugmeler">
+      <button id="evet" class="hamur kirmizi">EVET!</button>
+      <button id="hayir" class="hamur siyah" style="display:none">HAYIR</button>
+    </div>
+  </div>
+  <div id="harita" class="ekran">
+    <h1 id="zaferBaslik">İstanbul kurtuldu!</h1>
+    <h2 id="sonuc"></h2>
+    <div id="kartlar"></div>
+    <h2 id="karar" style="color:#ffd23a;margin:18px 0 0"></h2>
+    <div class="dugmeler">
+      <button id="londra" class="hamur kirmizi">✈ Londra'ya hazırım!</button>
+      <button id="kal" class="hamur siyah" style="display:none">İstanbul'da kalacağım</button>
+      <button id="tekrar" class="hamur sari">Tekrar oyna</button>
+      <button id="diger" class="hamur mavi" style="display:none">Diğer tarafı dene</button>
+    </div>
+  </div>
+  <div id="isim" class="ekran">
+    <h1>Adın ne?</h1>
+    <input id="isimGir" maxlength="20" autocomplete="off" placeholder="Adını yaz">
+    <button id="isimTamam" class="hamur kirmizi">Tamam ▶</button>
+    <div id="isimEski"></div>
+  </div>
+  <div id="merkez" class="ekran">
+    <div id="merkezPuan"></div><button id="merkezIsim" type="button"></button>
+    <h2>Kahramanını seç</h2>
+    <div id="kostumler"></div>
+    <h2>Görevini seç</h2>
+    <div id="gorevler"></div>
+  </div>
+  <div id="dokunma">
+    <div id="joyAlan"></div>
+    <div id="joyTaban"><div id="joyTopuz"></div></div>
+    <div id="atesAlan" data-tus="ates"><div class="daire">✸</div></div>
+    <div id="zamanAlan" data-tus="zaman" style="display:none"><div class="daire" id="zamanD">⏱</div></div>
+  </div>
+  <button id="gec" class="hamur sari">Geç ▶</button>
+</div>
+<div id="dondur"><div class="tel"></div>Bu bölüm yatay oynanır.<br>Telefonu yan çevir!</div>
+<script>(function () { var dik = false; function k() { var y = innerWidth > innerHeight * 1.15, d = innerHeight > innerWidth * 1.15; document.getElementById("dondur").style.display = ("ontouchstart" in window) && (dik ? y : d) ? "flex" : "none"; } addEventListener("resize", k); k(); })();</script>
+<script src="../ortak/menu.js?v=3" data-oyun="sehirler" data-ana="../menu_tr.html" data-yan="orta"></script>
+<script src="oyun.js"></script>
+</body>
+</html>
