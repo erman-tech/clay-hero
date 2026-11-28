@@ -56,6 +56,32 @@
       var s = yedek[a].cloneNode(); s.volume = Math.min(1, ses); var p = s.play(); if (p && p.catch) p.catch(function () {});
     } catch (e) {}
   }
+  // sevimli sesler: dosya yerine anında üretilir. "ag": ağ canavara çarpınca yukarı kayan "bıııp!", "yokol": canavar kaybolurken iki notalı parıltılı "pling-pling"
+  function sevimliSes(tur) {
+    if (!ac) return;
+    try {
+      var s = ac.currentTime + 0.01, ana = ac.createGain(); ana.gain.value = 0.5; ana.connect(ac.destination);
+      var nota = function (dalga, f0, f1, bas, sure, guc) {
+        var os = ac.createOscillator(), g = ac.createGain(); os.type = dalga;
+        os.frequency.setValueAtTime(f0, bas); if (f1 !== f0) os.frequency.exponentialRampToValueAtTime(f1, bas + sure * 0.6);
+        g.gain.setValueAtTime(0.0001, bas); g.gain.exponentialRampToValueAtTime(guc, bas + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, bas + sure);
+        os.connect(g); g.connect(ana); os.start(bas); os.stop(bas + sure + 0.02); return os;
+      };
+      if (tur === "ag") {
+        var b = nota("sine", 520, 1150, s, 0.22, 0.9), tit = ac.createOscillator(), tg = ac.createGain(); // tatlı titreşim
+        tit.frequency.value = 28; tg.gain.value = 40; tit.connect(tg); tg.connect(b.frequency); tit.start(s); tit.stop(s + 0.24);
+        nota("triangle", 1040, 2300, s + 0.005, 0.12, 0.25);
+      } else if (tur === "guc") { // güçlenme: alttan yükselen hışırtı + do-mi-sol-do arpeji + parıltılı uzun son nota
+        nota("sine", 260, 900, s, 0.35, 0.25);
+        [523, 659, 784].forEach(function (f, j) { nota("triangle", f, f, s + j * 0.07, 0.16, 0.6); });
+        nota("triangle", 1047, 1047, s + 0.21, 0.55, 0.75); nota("sine", 2094, 2094, s + 0.21, 0.4, 0.18);
+        nota("sine", 3136, 3136, s + 0.3, 0.25, 0.1); nota("sine", 4186, 4186, s + 0.38, 0.22, 0.08);
+      } else {
+        nota("triangle", 1047, 1047, s, 0.22, 0.7); nota("sine", 2094, 2094, s, 0.12, 0.2);               // do
+        nota("triangle", 1568, 1568, s + 0.11, 0.32, 0.7); nota("sine", 3136, 3136, s + 0.11, 0.18, 0.2); // sol
+      }
+    } catch (e) {}
+  }
   function muzikBasla() {
     muzikDur();
     try {
@@ -294,7 +320,7 @@
       t: 0, kam: 0, bitti: false, bitisSayac: 0, mesaj: "", mesajSn: 0, gorevSes: {},
       k: { x: 200, y: ZEMIN, vx: 0, vy: 0, yon: 1, yerde: true, yakit: 1, atSn: 0, bekleme: 0, can: 3, dokunulmaz: 0 },
       p: { x: 120, y: 480 },
-      platformlar: [], simitler: [], kotuler: [], sandiklar: [], mermiler: [], meteorlar: [], parcalar: [], esyalar: [], ucusIz: [],
+      platformlar: [], simitler: [], kotuler: [], sandiklar: [], mermiler: [], meteorlar: [], parcalar: [], esyalar: [], ucusIz: [], gucKalpler: [],
       simit: 0, yakalanan: 0, meteorSn: 5, kral: null, kralGeldi: false, dalgalar: [], yildizlar: [], duman: null
     };
     [[900, 500], [1150, 420], [1900, 480], [2150, 400], [2400, 480], [3300, 470], [3600, 390], [4500, 500], [4750, 420], [5000, 340],
@@ -356,7 +382,8 @@
   }
   function kotuYakala(o, e) {
     e.yakalandi = D.secim === "iyi" ? "ag" : "elektrik"; e.sn = 0.9; e.vy = -260; o.yakalanan++;
-    cal("e_pop", 0.8); parca(o, e.x, e.y - 40, D.secim === "iyi" ? "#ffffff" : "#ff3030", 10);
+    if (e.yakalandi === "ag") sevimliSes("ag"); else cal("e_pop", 0.8);
+    parca(o, e.x, e.y - 40, D.secim === "iyi" ? "#ffffff" : "#ff3030", 10);
     parca(o, e.x, e.y - 40, D.secim === "iyi" ? "#cfe6ff" : "#ffd23a", 6);
   }
 
@@ -387,6 +414,14 @@
     if (k.yerde && !k.yerdeOnce && (k.havaVy || 0) > 350) // sert iniş: iki yana toz bulutu
       for (i = 0; i < 8; i++) { var yn = i % 2 ? 1 : -1; izEkle(o, k.x + yn * 14, k.y - 6, yn * (120 + Math.random() * 160), -20 - Math.random() * 40, 10 + Math.random() * 8, 0.5, "#f0dcc0", "bulut"); }
     k.ucusOnce = k.ucuyor; k.yerdeOnce = k.yerde; k.havaVy = k.yerde ? 0 : k.vy;
+  }
+
+  // ---------- kalp alınca güçlenme: kahraman "boing" diye şişer, etrafında ışık halkaları, dönen yıldızlar ve yükselen kalpler ----------
+  var GUC_SN = 1.4;
+  function gucAl(o, k, arti) {
+    k.guc = GUC_SN; k.gucKalp = k.can - 1; k.gucArti = arti;
+    for (var i = 0; i < 10; i++) o.gucKalpler.push({ x: k.x + (Math.random() - 0.5) * 90, y: k.y - 30 - Math.random() * 90, vy: -90 - Math.random() * 90, sal: Math.random() * 6, olcek: 0.16 + Math.random() * 0.14, sn: 0.9 + Math.random() * 0.5, omur: 1.4 });
+    sevimliSes("guc");
   }
 
   function guncelle(dt) {
@@ -432,6 +467,8 @@
     }
     if (k.yerde) k.yakit = Math.min(1, k.yakit + dt * 1.2);
     ucusEfekti(o, k, dt);
+    if (k.guc > 0) k.guc -= dt; // kalp alınca güçlenme efekti
+    for (i = o.gucKalpler.length - 1; i >= 0; i--) { m = o.gucKalpler[i]; m.sn -= dt; m.y += m.vy * dt; if (m.sn <= 0) o.gucKalpler.splice(i, 1); }
     if (k.dokunulmaz > 0) k.dokunulmaz -= dt;
     if (k.atSn > 0) k.atSn -= dt;
     if (k.bekleme > 0) k.bekleme -= dt;
@@ -461,7 +498,7 @@
     }
     for (i = o.esyalar.length - 1; i >= 0; i--) {
       m = o.esyalar[i]; m.vy += 1200 * dt; m.y += m.vy * dt; if (m.y > ZEMIN - 30) { m.y = ZEMIN - 30; m.vy = 0; }
-      if (Math.abs(m.x - k.x) < 55 && m.y > k.y - 150 && m.y < k.y + 10) { o.esyalar.splice(i, 1); k.can = Math.min(3, k.can + 1); cal("e_simit", 0.6); }
+      if (Math.abs(m.x - k.x) < 55 && m.y > k.y - 150 && m.y < k.y + 10) { o.esyalar.splice(i, 1); var oncekiCan = k.can; k.can = Math.min(3, k.can + 1); gucAl(o, k, k.can > oncekiCan); }
     }
 
     // --- kostüm gücü: zamanı durdur (Londra kostümü). Kötüler, baş kötü ve meteorlar donar; kahraman hareket eder ---
@@ -505,7 +542,7 @@
     // --- kötüler ---
     for (i = o.kotuler.length - 1; i >= 0; i--) {
       e = o.kotuler[i];
-      if (e.yakalandi) { e.sn -= dt; e.vy += 1500 * dt; e.y += e.vy * dt; if (e.sn <= 0) o.kotuler.splice(i, 1); continue; }
+      if (e.yakalandi) { e.sn -= dt; e.vy += 1500 * dt; e.y += e.vy * dt; if (e.sn <= 0) { if (e.yakalandi === "ag") sevimliSes("yokol"); o.kotuler.splice(i, 1); } continue; }
       if (e.tur === "yuv") { e.x -= e.hiz * dt; e.aci -= e.hiz * dt / 34; if (e.x < o.kam - 200) { o.kotuler.splice(i, 1); continue; } }
       else if (o.dublor && Math.abs(e.x - o.dublor.x) < 760) { // dublöre koşar; değince yakalanır
         e.x += (o.dublor.x > e.x ? 1 : -1) * e.hiz * 1.6 * dt; e.yon = o.dublor.x > e.x ? 1 : -1;
@@ -733,12 +770,31 @@
       }
     }
     c.globalAlpha = 1;
+    var gp2 = k.guc > 0 ? 1 - k.guc / GUC_SN : -1, gmx = k.x, gmy = k.y - 75; // güçlenme ilerlemesi 0→1
+    if (gp2 >= 0) {
+      var hale = c.createRadialGradient(gmx, gmy, 10, gmx, gmy, 110 + (kare() % 2) * 10);
+      hale.addColorStop(0, "rgba(255,150,180," + (0.6 * (1 - gp2)) + ")"); hale.addColorStop(0.6, "rgba(255,210,58," + (0.35 * (1 - gp2)) + ")"); hale.addColorStop(1, "rgba(255,210,58,0)");
+      c.fillStyle = hale; c.beginPath(); c.arc(gmx, gmy, 120, 0, 7); c.fill();
+      for (i = 0; i < 2; i++) { // iki ışık halkası art arda genişler
+        var hp = Math.max(0, Math.min(1, gp2 * 1.6 - i * 0.35)); if (hp <= 0 || hp >= 1) continue;
+        c.globalAlpha = 1 - hp; c.strokeStyle = i ? "#ffd23a" : "#ff6b8a"; c.lineWidth = 12 * (1 - hp) + 2;
+        c.beginPath(); c.arc(gmx, gmy, 40 + 200 * hp, 0, 7); c.stroke();
+      }
+      c.globalAlpha = 1;
+    }
     var poz = k.atSn > 0 ? "at" : !k.yerde ? "uc" : Math.abs(k.vx) > 25 ? (R[on + "kos4"] ? "kos" + (1 + Math.floor(k.adim / 46) % 4) : Math.floor(k.adim / 62) % 2 ? "kos1" : "kos2") : "dur";
     var egim = k.ucuyor && poz === "uc" ? Math.max(-1, Math.min(1, k.vx / 310)) * 0.2 : 0, salla = k.ucuyor ? (kare() % 2 ? -3 : 3) : 0; // uçarken gidiş yönüne eğilir, poz poz süzülür
     if (!(k.dokunulmaz > 0 && kare() % 2 && Math.floor(o.t * 16) % 2) && !(o.duman && o.duman.sn > 0.4))
       if (k.egik && R[on + "egil"] && R[on + "egil"].naturalWidth) ciz(R[on + "egil"], k.x + k.yon * 14, k.y, 0.55, k.yon < 0); // eğilme: diz çökmüş, kolu ileride; uzanan kol tuvali öne genişlettiği için gövde k.x'e gelsin diye 14 px kaydırılır
       else if (k.egik) { c.save(); c.translate(Math.round(k.x), Math.round(k.y)); c.scale(1.12, 0.62); ciz(R[on + poz], 0, 0, 0.55, k.yon < 0); c.restore(); } // çömelme pozu yoksa basık çizim (geçici)
-      else ciz(R[on + poz], k.x + (poz === "dur" ? titre(1) * 0.6 : 0), k.y + (poz === "uc" ? -20 : 0) + salla, 0.55, k.yon < 0, null, egim);
+      else ciz(R[on + poz], k.x + (poz === "dur" ? titre(1) * 0.6 : 0), k.y + (poz === "uc" ? -20 : 0) + salla, 0.55 * (gp2 >= 0 && gp2 < 0.35 ? 1 + 0.14 * Math.sin(gp2 / 0.35 * Math.PI) : 1), k.yon < 0, null, egim); // güçlenince "boing" diye şişer
+    if (gp2 >= 0) { // önde: dönen altın yıldızlar, yükselen kalpler, "+1"
+      c.globalAlpha = 1 - gp2;
+      for (i = 0; i < 6; i++) { var ya = o.t * 4 + i * Math.PI / 3, yr = 70 + 25 * gp2; yildizCiz(gmx + Math.cos(ya) * yr, gmy + Math.sin(ya) * yr * 0.8, 11 * ((kare() + i) % 2 ? 1.15 : 0.85), "#fff3a0"); }
+      if (k.gucArti) yazi("+1 ♥", k.x, k.y - 170 - 50 * gp2, 40, "#ff6b8a", "center");
+      c.globalAlpha = 1;
+    }
+    for (i = 0; i < o.gucKalpler.length; i++) { m = o.gucKalpler[i]; ciz(R.kalp, m.x + Math.sin(o.t * 6 + m.sal) * 8, m.y, m.olcek, false, Math.max(0, Math.min(1, m.sn / 0.4))); }
     if (o.dublor) { // dublör: kahramanın duruş pozu + başının üstünde klaket; son saniyede titrer
       if (!(o.dublor.sn < 1 && kare() % 2)) { ciz(R[on + "dur"], o.dublor.x + titre(2), ZEMIN, 0.55, o.dublor.yon < 0); ciz(R.klaket, o.dublor.x, ZEMIN - 175, 0.3, false); }
     }
@@ -803,7 +859,11 @@
 
     // --- gösterge --- (sol üst köşe ⏸ düğmesine ayrıldı: kalpler ve çubuklar 96 px sağda)
     c.save(); c.translate(96, 0);
-    for (i = 0; i < 3; i++) ciz(R.kalp, 46 + i * 62, 78, 0.68, false, i < k.can ? 1 : 0.22);
+    for (i = 0; i < 3; i++) {
+      var yeniKalp = k.guc > 0 && i === k.gucKalp, kp = yeniKalp ? 1 - k.guc / GUC_SN : 0; // yeni gelen kalp göstergede zıplar ve parlar
+      if (yeniKalp) { c.globalAlpha = 1 - kp; c.fillStyle = "#ffd23a"; c.beginPath(); c.arc(46 + i * 62, 56, 30 + 22 * kp, 0, 7); c.fill(); c.globalAlpha = 1; }
+      ciz(R.kalp, 46 + i * 62, 78 + (yeniKalp ? 12 * Math.sin(kp * Math.PI) * 0.5 : 0), 0.68 * (yeniKalp ? 1 + 0.45 * Math.sin(Math.min(1, kp * 2) * Math.PI) : 1), false, i < k.can ? 1 : 0.22);
+    }
     c.fillStyle = "rgba(20,25,60,.55)"; yuvarlak(22, 92, 190, 22, 11); c.fill();
     c.fillStyle = D.secim === "iyi" ? "#ff5a4a" : "#ff3030"; yuvarlak(25, 95, Math.max(0, 184 * k.yakit), 16, 8); c.fill();
     yazi("flight", 222, 110, 18, "#fff");
