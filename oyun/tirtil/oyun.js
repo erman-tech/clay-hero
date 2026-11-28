@@ -91,6 +91,7 @@
   }
   function filmBitti() { var f = filmBitince; filmBitince = null; film.pause(); if (f) f(); }
   film.addEventListener("ended", filmBitti);
+  film.addEventListener("error", function () { if (filmBitince) filmBitti(); }); // Clay Hero: portal filmi yok, kara ekranda kalmasın
   $("gec").addEventListener("click", filmBitti);
   function secimAc() { muzikDur(); ekranAc("secim"); cal("p_sec", 1); }
   KAHRAMANLAR.forEach(function (k) {
