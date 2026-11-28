@@ -28,6 +28,8 @@
   #sonuc h2 { font-size: 26px; margin: 0 50px 30px; font-weight: normal; }
   #sonuc .dugmeler { display: flex; flex-direction: column; gap: 26px; }
   #sonuc .hamur { font-size: 30px; padding: 16px 34px; }
+  #film { position: fixed; inset: 0; width: 100vw; height: 100vh; object-fit: contain; background: #1a1438; z-index: 40; display: none; }
+  #gec { position: fixed; right: 20px; bottom: 18px; z-index: 41; font-size: 22px; padding: 10px 24px; display: none; }
   #dondur { position: fixed; inset: 0; z-index: 50; background: #1a1438; color: #fff; display: none; align-items: center; justify-content: center;
     flex-direction: column; text-align: center; font-size: 26px; }
   #dondur .tel { width: 70px; height: 120px; border: 8px solid #ffd23a; border-radius: 16px; margin-bottom: 26px; animation: don 1.6s ease-in-out infinite; }
@@ -55,6 +57,8 @@
     </div>
   </div>
 </div>
+<video id="film" playsinline preload="auto"></video>
+<button id="gec" class="hamur sari">Skip ▶</button>
 <div id="dondur"><div class="tel"></div>This game is played upright.<br>Hold your tablet upright!</div>
 <script src="../../ortak/menu.js?v=2" data-oyun="kosu" data-ana="../../menu.html" data-yan="sol"></script>
 <script src="oyun.js"></script>
